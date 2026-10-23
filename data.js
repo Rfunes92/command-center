@@ -22,6 +22,7 @@ CC.projects = {
   "Apps":          "#a3e635",
   "Grace Auto":    "#3b82f6",
   "Torque Legion": "#f59e0b",
+  "Betting":       "#22c55e",
 };
 
 /* Sidebar sections with link cards. Add a section = add a block (it gets a sidebar entry). */
@@ -46,6 +47,16 @@ CC.sections = [
   { id: "apps", title: "Apps we built", nav: "Apps", icon: "cube", project: "Apps",
     desc: "Your own projects.", links: [
     { title: "Mount Up", sub: "Workout app", url: "https://rfunes92.github.io/workout-app/", tag: "App", icon: "dumbbell", color: "#a3e635" },
+  ]},
+  { id: "betting", title: "Betting", nav: "Betting", icon: "trophy", project: "Betting",
+    desc: "Football and UFC, run by Edge. Strict bankroll limit; you place every bet.", links: [
+    { title: "DraftKings Sportsbook", sub: "sportsbook.draftkings.com", url: "https://sportsbook.draftkings.com", tag: "Book", icon: "trophy", color: "#22c55e" },
+    { title: "FanDuel Sportsbook", sub: "sportsbook.fanduel.com", url: "https://sportsbook.fanduel.com", tag: "Book", icon: "trophy", color: "#3b82f6" },
+    { title: "Action Network odds", sub: "Lines, splits & movement", url: "https://www.actionnetwork.com/nfl/odds", tag: "Odds", icon: "chart", color: "#00e5ff" },
+    { title: "Pro Football Reference", sub: "NFL player & team stats", url: "https://www.pro-football-reference.com", tag: "NFL", icon: "list", color: "#f59e0b" },
+    { title: "NFL Next Gen Stats", sub: "nextgenstats.nfl.com", url: "https://nextgenstats.nfl.com", tag: "NFL", icon: "gauge", color: "#ef4444" },
+    { title: "UFC Stats", sub: "ufcstats.com", url: "http://ufcstats.com/statistics/events/upcoming", tag: "UFC", icon: "flag", color: "#a855f7" },
+    { title: "Tapology", sub: "Fight cards & records", url: "https://www.tapology.com", tag: "UFC", icon: "calendar", color: "#ec4899" },
   ]},
   { id: "money", title: "Money", nav: "Money", icon: "wallet", project: null,
     desc: "Reporting, budget and books. Nothing financial is stored on this site.", links: [
