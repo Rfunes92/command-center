@@ -50,6 +50,7 @@ CC.sections = [
   ]},
   { id: "betting", title: "Betting", nav: "Betting", icon: "trophy", project: "Betting",
     desc: "Football and UFC, run by Edge. Strict bankroll limit; you place every bet.", links: [
+    { title: "Edge Betting HQ", sub: "Top picks, bet log, line shop", url: "https://rfunes92.github.io/edge-betting/", tag: "Edge", icon: "chart", color: "#00e5ff" },
     { title: "DraftKings Sportsbook", sub: "sportsbook.draftkings.com", url: "https://sportsbook.draftkings.com", tag: "Book", icon: "trophy", color: "#22c55e" },
     { title: "FanDuel Sportsbook", sub: "sportsbook.fanduel.com", url: "https://sportsbook.fanduel.com", tag: "Book", icon: "trophy", color: "#3b82f6" },
     { title: "Action Network odds", sub: "Lines, splits & movement", url: "https://www.actionnetwork.com/nfl/odds", tag: "Odds", icon: "chart", color: "#00e5ff" },
