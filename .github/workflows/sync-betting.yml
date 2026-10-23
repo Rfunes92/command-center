@@ -1,0 +1,32 @@
+name: Sync Edge betting app into /betting
+
+on:
+  schedule:
+    - cron: '47 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-betting
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch latest edge-betting
+        run: git clone --depth 1 https://github.com/Rfunes92/edge-betting.git /tmp/eb
+      - name: Copy into betting/
+        run: rsync -a --delete --exclude .git --exclude .github --exclude README.md --exclude scripts --exclude CNAME /tmp/eb/ betting/
+      - name: Commit if changed
+        run: |
+          if [ -z "$(git status --porcelain -- betting/)" ]; then echo "No changes."; exit 0; fi
+          git config user.name "hub-sync-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add betting/
+          git commit -m "betting: sync from edge-betting"
+          git push
