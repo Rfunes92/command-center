@@ -261,6 +261,26 @@ body.compact .ftable td{padding:8px 16px}
 
 /* mobile */
 .tabbar,.scrim{display:none}
+/* folders */
+.grid{grid-auto-rows:1fr}
+.card{min-height:96px;height:100%}
+.ftiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--gap);margin-bottom:8px}
+.ftile{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r);background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);color:inherit;text-decoration:none;transition:border-color .2s,transform .2s var(--ease);animation:up .45s var(--ease) both;animation-delay:calc(var(--i,0)*24ms)}
+.ftile:hover{border-color:rgba(0,229,255,.5);transform:translateY(-2px)}
+.ftile .fti{display:block;font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--cyan-soft);border:1px solid rgba(0,229,255,.25)}
+.fmeta{display:block;color:var(--muted);font-size:12px}
+.folder{margin:0 0 14px;border:1px solid var(--line);border-radius:var(--r);background:rgba(255,255,255,.015);padding:0 14px}
+.folder>summary{list-style:none;display:flex;align-items:center;gap:12px;padding:14px 0;cursor:pointer;user-select:none}
+.folder>summary::-webkit-details-marker{display:none}
+.folder>summary .fti{font-weight:700;font-size:16px}
+.folder>summary .badge{font-size:11px;font-weight:700;min-width:22px;height:20px;padding:0 6px;border-radius:999px;display:grid;place-items:center;background:var(--cyan-soft);color:var(--cyan)}
+.folder>summary .fopen{margin-left:auto;text-decoration:none}
+.folder>summary .chev{color:var(--muted);transition:transform .2s;display:grid}
+.folder:not([open])>summary .chev{transform:rotate(-90deg)}
+.folder[open]>summary{border-bottom:1px solid var(--line);margin-bottom:14px}
+.folder>.grid,.folder>.empty{margin-bottom:14px}
+@media (max-width:820px){.folder>summary .fmeta{display:none}.ftiles{grid-template-columns:1fr 1fr;gap:10px}.ftile{padding:10px}.fic{width:32px;height:32px}}
 @media (max-width:1100px){.panels{grid-template-columns:1fr}.strip{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:820px){
   .app{grid-template-columns:1fr;background:none}
@@ -405,7 +425,7 @@ button,a,.card,.chip{touch-action:manipulation}
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="data.js?v=1792781544"></script>
-<script src="app.js?v=1792781544"></script>
+<script src="data.js?v=1792782344"></script>
+<script src="app.js?v=1792782344"></script>
 </body>
 </html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Rokhal Marketing Road Map</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;font-family:Inter,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#1f2430;background:#f7f8fa}
+#vp{position:fixed;inset:0;touch-action:none;cursor:grab;background-color:#f7f8fa;background-image:radial-gradient(#c9ced8 1.2px,transparent 1.2px);background-size:24px 24px}
+#vp.drag{cursor:grabbing}
+#world{position:absolute;left:0;top:0;transform-origin:0 0;width:2300px;height:1300px}
+svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+h1{position:absolute;left:40px;top:20px;margin:0;font-size:46px;font-weight:800;letter-spacing:-.5px;white-space:nowrap}
+.card{position:absolute;width:300px;border-radius:14px;padding:12px 14px;box-shadow:0 2px 0 rgba(0,0,0,.06),0 6px 16px rgba(30,40,60,.10);font-size:15px;line-height:1.3;border:1px solid rgba(0,0,0,.06)}
+.hdr{font-size:19px;font-weight:800;padding:16px}
+.chip{display:inline-block;margin-top:8px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:99px;color:#fff;letter-spacing:.2px}
+.done{background:#22a35a}.prog{background:#e8b500;color:#3a2e00}.ron{background:#f07a1a}.later{background:#8d94a1}
+.c1{background:#ffe9d6}.c2{background:#dcf5e3}.c3{background:#fff4c2}.c4{background:#e3ecff}.c5{background:#efe4ff}
+.goal{background:#1f2430;color:#fff;width:320px;font-size:22px;font-weight:800;padding:22px;text-align:center;border-radius:18px}
+.today{background:#ff5d8f;color:#fff;width:190px;font-weight:800;transform:rotate(-4deg);font-size:16px;text-align:center}
+.first{outline:3px solid #ff5d8f;outline-offset:2px}
+#legend{position:fixed;right:14px;bottom:14px;background:#fff;border-radius:12px;padding:10px 14px;box-shadow:0 4px 14px rgba(0,0,0,.12);font-size:13px;z-index:5}
+#legend div{margin:4px 0}#legend .chip{margin:0 6px 0 0}
+#help{position:fixed;left:14px;bottom:14px;font-size:12px;color:#6b7280;background:#fffc;padding:6px 10px;border-radius:8px;z-index:5}
+#fit{position:fixed;right:14px;top:14px;z-index:5;border:0;background:#fff;border-radius:10px;padding:8px 12px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer}
+</style></head><body>
+<div id="vp"><div id="world"><svg id="lines" width="2300" height="1300"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#6b7280"/></marker><marker id="ahp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#ff5d8f"/></marker></defs></svg>
+<h1>Rokhal Marketing Road Map: 3 paying clients by Nov 15</h1></div></div>
+<div id="legend"><b>Status</b><div><span class="chip done">Done</span></div><div><span class="chip prog">In progress</span></div><div><span class="chip ron">Needs Ronnie</span></div><div><span class="chip later">Later</span></div></div>
+<div id="help">Drag to pan · wheel / pinch to zoom</div><button id="fit">Fit</button>
+<script>
+const S={d:['done','Done'],p:['prog','In progress'],r:['ron','Needs Ronnie'],l:['later','Later']};
+const cols=[
+ ['c1','1. Get set up (this week)','r',[['Connect domain (FIRST)','r'],['Business email','r'],['Phone number + texting registration (A2P)','r'],['Real prices, phone, photo, bio','r'],['Connect Google Calendar + review link','r']]],
+ ['c2','2. System built','d',[['Free Audit funnel page + thank-you page','d'],['Audit request form','d'],['9 follow-up automations (in draft)','d'],['Pipeline stages','d'],['Review widget','d'],['Email templates + text snippets','d']]],
+ ['c3','3. Find businesses','p',[['24 local electricians / HVAC prospects','p'],['PA contractor list (Ronnie to run the searches)','r'],['Free lead sources','p'],['Blaze Electric as first showcase','p']]],
+ ['c4','4. Reach out<br><small style="font-weight:600">after step 1 + Ronnie\'s approval</small>','l',[['Free website checkup offer','l'],['Personal emails and calls','l'],['Automated follow-ups','l']]],
+ ['c5','5. Close and keep<br><small style="font-weight:600">through Nov 15</small>','l',[['Audit call','l'],['Simple proposal','l'],['Build their site in GHL','l'],['Missed-call text-back + reviews','l'],['Monthly retainer','l']]]];
+const W=document.getElementById('world'),L=document.getElementById('lines');
+function card(cls,html,st,x,y){const e=document.createElement('div');e.className='card '+cls;e.style.left=x+'px';e.style.top=y+'px';e.innerHTML=html+(st?'<br><span class="chip '+S[st][0]+'">'+S[st][1]+'</span>':'');W.appendChild(e);return e}
+const heads=[],kids=[];
+cols.forEach((c,i)=>{const x=60+i*400;const h=card(c[0]+' hdr',c[1],c[2],x,190);heads.push(h);const ks=[];
+ c[3].forEach((k,j)=>{const e=card(c[0]+(i==0&&j==0?' first':''),k[0],k[1],x+20,330+j*112);ks.push(e)});kids.push(ks)});
+const goal=card('goal','🎯 3 clients by Nov 15<br><span style="font-size:15px;font-weight:600;opacity:.8">stretch: 4 by Nov 29</span>','',2060,560);
+const today=card('today','📌 Today, Tue Oct 20<br><span style="font-weight:600;font-size:13px">Start here</span>','',-170,250);
+function box(e){return{x:e.offsetLeft,y:e.offsetTop,w:e.offsetWidth,h:e.offsetHeight}}
+function path(d,col,m,dash){const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke',col);p.setAttribute('stroke-width','2.5');p.setAttribute('stroke-linecap','round');if(dash)p.setAttribute('stroke-dasharray','6 6');p.setAttribute('marker-end','url(#'+m+')');L.appendChild(p)}
+function lr(a,b,col='#6b7280',m='ah'){const A=box(a),B=box(b);const x1=A.x+A.w,y1=A.y+A.h/2,x2=B.x-4,y2=B.y+B.h/2,dx=Math.max(60,(x2-x1)/2);path(`M${x1},${y1} C${x1+dx},${y1} ${x2-dx},${y2} ${x2},${y2}`,col,m)}
+function draw(){L.querySelectorAll('path:not(defs path)').forEach(p=>{if(!p.closest('defs'))p.remove()});
+ heads.forEach((h,i)=>{if(i<4)lr(h,heads[i+1]);const H=box(h);kids[i].forEach(k=>{const K=box(k);const x=H.x+16,y1=H.y+H.h;path(`M${x},${y1} C${x},${K.y+K.h/2} ${x},${K.y+K.h/2} ${K.x-4},${K.y+K.h/2}`,'#9aa1ad','ah',true)})});
+ lr(heads[4],goal);const T=box(today),K=box(kids[0][0]);path(`M${T.x+T.w/2},${T.y+T.h} C${T.x+T.w/2},${K.y+K.h/2} ${K.x-60},${K.y+K.h/2} ${K.x-4},${K.y+K.h/2}`,'#ff5d8f','ahp')}
+draw();
+// pan/zoom
+const vp=document.getElementById('vp');let s=1,tx=0,ty=0;const P=new Map();let last=null;
+function ap(){W.style.transform=`translate(${tx}px,${ty}px) scale(${s})`;vp.style.backgroundPosition=`${tx}px ${ty}px`;vp.style.backgroundSize=`${24*s}px ${24*s}px`}
+function zoomAt(f,cx,cy){const ns=Math.min(3,Math.max(.15,s*f));f=ns/s;tx=cx-(cx-tx)*f;ty=cy-(cy-ty)*f;s=ns;ap()}
+function fit(){const bx=-200,by=0,bw=2620,bh=1100;s=Math.min(innerWidth/bw,innerHeight/bh);tx=(innerWidth-bw*s)/2-bx*s;ty=(innerHeight-bh*s)/2-by*s;ap()}
+vp.addEventListener('wheel',e=>{e.preventDefault();zoomAt(Math.exp(-e.deltaY*.0015),e.clientX,e.clientY)},{passive:false});
+vp.addEventListener('pointerdown',e=>{vp.setPointerCapture(e.pointerId);P.set(e.pointerId,{x:e.clientX,y:e.clientY});vp.classList.add('drag');last=null});
+vp.addEventListener('pointermove',e=>{if(!P.has(e.pointerId))return;const o=P.get(e.pointerId);if(P.size==1){tx+=e.clientX-o.x;ty+=e.clientY-o.y;ap()}P.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(P.size==2){const [a,b]=[...P.values()];const d=Math.hypot(a.x-b.x,a.y-b.y),cx=(a.x+b.x)/2,cy=(a.y+b.y)/2;if(last){tx+=cx-last.cx;ty+=cy-last.cy;zoomAt(d/last.d,cx,cy)}last={d,cx,cy}}});
+function up(e){P.delete(e.pointerId);last=null;if(!P.size)vp.classList.remove('drag')}
+vp.addEventListener('pointerup',up);vp.addEventListener('pointercancel',up);
+document.getElementById('fit').onclick=fit;addEventListener('resize',fit);fit();
+</script></body></html>

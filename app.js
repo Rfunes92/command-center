@@ -56,6 +56,8 @@ const P = {
   kanban:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 7v8M12 7v4M16 7v10"/>',
   users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>',
   flag:'<path d="M5 21V4h11l-2 4 2 4H5"/>',
+  car:'<path d="M5 17h14v-5l-2-5H7l-2 5z"/><path d="M5 12h14"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/>',
+  chev:'<path d="m6 9 6 6 6-6"/>',
   list:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
 };
 const ic = (n, size = 18, color = "currentColor", sw = 2, fill = "none") => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="${color}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n] || P.link}</svg>`;
@@ -69,8 +71,9 @@ const MEDIA = CC.media.map((m, i) => ({ ...m, id: "m" + i + "-" + slug(m.title) 
 const host = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
 const VIEWS = [
   { id: "home", label: "Home", icon: "home", group: "Overview" },
+  { id: "folders", label: "All folders", icon: "grid", group: "Overview", count: CC.sections.length },
   { id: "team", label: "Team", icon: "users", group: "Overview", count: (CC.team || []).length },
-  ...CC.sections.map(s => ({ id: s.id, label: s.nav || s.title, icon: s.icon || "grid", group: "Workspace", count: s.links.length, section: s })),
+  ...CC.sections.map(s => ({ id: s.id, label: s.nav || s.title, icon: s.icon || "grid", group: "Folders", count: s.links.length, showZero: true, section: s })),
   { id: "files", label: "Files", icon: "folder", group: "Library", count: FILES.length },
   { id: "media", label: "Images & Media", icon: "photo", group: "Library", count: MEDIA.length },
   { id: "notes", label: "Notes", icon: "note", group: "Library" },
@@ -170,6 +173,8 @@ V.home = () => {
   <div class="hero"><div><div class="eyebrow">${ic("clock", 13, "#00e5ff", 2.4)}${esc(now)}</div><h1>${greeting()}, <span class="hl">Ronnie</span></h1><p>${dl} days to ${fmtDate(g.deadline).replace(/, \d+$/, "")} · ${g.signed} of ${g.target} founding clients signed · ${g.prospects} prospects ready</p></div>
     <div class="chips"><a class="chip" href="#/files">${ic("folder", 15)}Files</a><a class="chip" href="#/media">${ic("photo", 15)}Images</a><button class="chip" data-act="palette">${ic("arrow", 15)}Jump to…</button></div></div>
   <div class="upnext"><div class="ic">${ic("arrow", 20, "currentColor", 2.6)}</div><div><div class="k">Up next</div><div class="v">${esc(CC.upNext)}</div></div></div>
+  <div class="sec-head"><h2>${ic("grid", 16, "#00e5ff")}Folders</h2><span class="sub">${plural(CC.sections.length, "folder")} · ${plural(CARDS.length, "card")}</span><span class="right"><a class="linkbtn" href="#/folders">See all cards →</a></span></div>
+  <div class="ftiles">${CC.sections.map((s, i) => `<a class="ftile" href="#/${esc(s.id)}" style="--i:${i}"><span class="fic">${ic(s.icon || "grid", 18, "#00e5ff")}</span><span style="min-width:0"><span class="fti">${esc(s.title)}</span><span class="fmeta">${esc(folderMeta(s))}</span></span></a>`).join("")}</div>
   <div class="panels">
     <div class="panel glass"><h3>${ic("list", 17, "#00e5ff")}Where things stand</h3><div class="meta">Status as of ${esc(CC.statusAsOf)}</div>
       <ul class="status">${CC.status.map((s, i) => `<li style="--i:${i}"><span class="pill s-${esc(s.state)}">${esc(s.state)}</span><span>${esc(s.text)}</span></li>`).join("")}</ul></div>
@@ -196,14 +201,27 @@ V.home = () => {
   <div class="strip">${imgs.map(m => `<button data-lb="${m.id}" aria-label="${esc(m.title)}"><img src="${esc(m.thumb)}" alt="${esc(m.title)}" loading="lazy" decoding="async"></button>`).join("")}</div>`;
 };
 
+const assetsOf = s => s.project ? FILES.filter(f => f.project === s.project).length + MEDIA.filter(m => m.project === s.project).length : 0;
+const plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
+const folderMeta = s => plural(s.links.length, "card") + (assetsOf(s) ? " · " + plural(assetsOf(s), "asset") : "");
+const noCards = s => `<div class="empty" style="padding:20px">${assetsOf(s) ? `No link cards yet. ${esc(s.title)} assets are in the library: <a class="linkbtn" href="#/${esc(s.id)}">open folder →</a>` : "No link cards yet."}</div>`;
+let folderOpen = store.get("folderOpen", {});
+V.folders = () => `
+  <div class="hero"><div><div class="eyebrow">${ic("grid", 13, "#00e5ff", 2.4)}Overview</div><h1>All folders</h1><p>Every link in one place, grouped by folder. Tap a folder header to collapse or expand it.</p></div>
+    <div class="chips"><span class="chip" style="cursor:default">${plural(CC.sections.length, "folder")}</span><span class="chip" style="cursor:default">${plural(CARDS.length, "card")}</span><button class="chip" data-act="folders-all">Expand / collapse all</button></div></div>
+  ${CC.sections.map(s => `<details class="folder" data-folder="${esc(s.id)}"${folderOpen[s.id] === false ? "" : " open"}>
+    <summary><span class="fic">${ic(s.icon || "grid", 18, "#00e5ff")}</span><span class="fti">${esc(s.title)}</span><span class="badge">${s.links.length}</span><span class="fmeta">${esc(folderMeta(s))}</span><a class="linkbtn fopen" href="#/${esc(s.id)}">Open →</a><span class="chev">${ic("chev", 18)}</span></summary>
+    ${s.links.length ? `<div class="grid">${CARDS.filter(c => c.section === s).map(cardHTML).join("")}</div>` : noCards(s)}
+  </details>`).join("")}`;
+
 function sectionView(s) {
   const cards = CARDS.filter(c => c.section === s);
   const files = s.project ? FILES.filter(f => f.project === s.project) : [];
   const media = s.project ? MEDIA.filter(m => m.project === s.project) : [];
   return `
-  <div class="hero"><div><div class="eyebrow">${ic(s.icon || "grid", 13, "#00e5ff", 2.4)}Workspace</div><h1>${esc(s.title)}</h1><p>${esc(s.desc || "")}</p></div>
-    <div class="chips"><span class="chip" style="cursor:default">${cards.length} links</span>${files.length ? `<a class="chip" href="#/files?p=${encodeURIComponent(s.project)}">${files.length} files</a>` : ""}${media.length ? `<a class="chip" href="#/media?p=${encodeURIComponent(s.project)}">${media.length} media</a>` : ""}</div></div>
-  <div class="grid">${cards.map(cardHTML).join("")}</div>
+  <div class="hero"><div><div class="eyebrow">${ic(s.icon || "grid", 13, "#00e5ff", 2.4)}Folder</div><h1>${esc(s.title)}</h1><p>${esc(s.desc || "")}</p></div>
+    <div class="chips"><span class="chip" style="cursor:default">${plural(cards.length, "card")}</span>${files.length ? `<a class="chip" href="#/files?p=${encodeURIComponent(s.project)}">${files.length} files</a>` : ""}${media.length ? `<a class="chip" href="#/media?p=${encodeURIComponent(s.project)}">${media.length} media</a>` : ""}</div></div>
+  ${cards.length ? `<div class="grid">${cards.map(cardHTML).join("")}</div>` : `<div class="empty" style="padding:20px">No link cards in this folder yet. Its files and images are below.</div>`}
   ${files.length ? `<div class="sec-head"><h2>${ic("folder", 16, "#00e5ff")}Files</h2><span class="right"><a class="linkbtn" href="#/files?p=${encodeURIComponent(s.project)}">All ${esc(s.project)} files →</a></span></div>${fileTable(files.slice(0, 6))}` : ""}
   ${media.length ? `<div class="sec-head"><h2>${ic("photo", 16, "#00e5ff")}Images & media</h2><span class="right"><a class="linkbtn" href="#/media?p=${encodeURIComponent(s.project)}">Open gallery →</a></span></div><div class="gallery">${media.slice(0, 8).map(mediaTile).join("")}</div>` : ""}`;
 }
@@ -277,9 +295,9 @@ function render(animate = true) {
 }
 function buildNav() {
   let html = "", g = "";
-  VIEWS.forEach(v => { if (v.group !== g) { g = v.group; html += `<div class="navlabel">${g}</div>`; } html += `<a href="#/${v.id}" data-v="${v.id}" title="${esc(v.label)}">${ic(v.icon, 18)}<span class="lbl">${esc(v.label)}</span>${v.count ? `<span class="badge">${v.count}</span>` : ""}</a>`; });
+  VIEWS.forEach(v => { if (v.group !== g) { g = v.group; html += `<div class="navlabel">${g}</div>`; } html += `<a href="#/${v.id}" data-v="${v.id}" title="${esc(v.label)}">${ic(v.icon, 18)}<span class="lbl">${esc(v.label)}</span>${v.count || v.showZero ? `<span class="badge">${v.count}</span>` : ""}</a>`; });
   $("#nav").innerHTML = html;
-  const tabs = [["home", "Home", "home"], ["rokhal", "Rokhal", "rocket"], ["files", "Files", "folder"], ["media", "Media", "photo"]];
+  const tabs = [["home", "Home", "home"], ["folders", "Folders", "grid"], ["files", "Files", "folder"], ["media", "Media", "photo"]];
   $("#tabbar").innerHTML = tabs.map(([v, l, i]) => `<a href="#/${v}" data-v="${v}">${ic(i, 21)}<span>${l}</span></a>`).join("") + `<button data-act="drawer">${ic("menu", 21)}<span>More</span></button>`;
   $$("#nav a, #tabbar a").forEach(a => a.classList.toggle("on", a.dataset.v === current));
 }
@@ -363,9 +381,11 @@ document.addEventListener("click", e => {
     density: () => { const on = document.body.classList.toggle("compact"); store.set("compact", on); $("#densLbl").textContent = on ? "Comfortable view" : "Compact view"; a.setAttribute("aria-pressed", on); toast(on ? "Compact view" : "Comfortable view", "menu"); },
     "lb-close": closeLB, "lb-prev": () => stepLB(-1), "lb-next": () => stepLB(1),
     "clear-recent": () => { recent = []; store.set("recent", []); render(false); },
+    "folders-all": () => { const ds = $$("details.folder"), open = !ds.every(d => d.open); ds.forEach(d => { d.open = open; folderOpen[d.dataset.folder] = open; }); store.set("folderOpen", folderOpen); },
     fclear: () => { state.fq = ""; state.fp = "All"; render(false); },
   }[act] || (() => {}))();
 });
+document.addEventListener("toggle", e => { const d = e.target; if (d.matches && d.matches("details.folder")) { folderOpen[d.dataset.folder] = d.open; store.set("folderOpen", folderOpen); } }, true);
 document.addEventListener("play", e => { const r = e.target.dataset && e.target.dataset.rec; if (r) { const [k, id] = r.split(":"); addRecent(k, id); } $$("video,audio").forEach(m => m !== e.target && m.pause()); }, true);
 document.addEventListener("keydown", e => {
   const typing = /INPUT|TEXTAREA/.test(document.activeElement.tagName);

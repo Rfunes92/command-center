@@ -3,7 +3,7 @@
    Everything on the site comes from this file. Edit, commit, push.
    See README.md for copy-paste examples.
 
-   Card:   { title, url, tag, icon, color, sub?, private? }  (private card: no url, lock badge)
+   Card:   { title, url, tag, icon, color, sub?, private? }  url may be relative (betting/, roadmap/)  (private card: no url, lock badge)
    File:   { name, type, project, path, size, added, private?, note? }
    Media:  { title, featured?, kind: "image"|"video"|"audio", project, src, thumb?, poster?, size, added, private?, note? }
    featured: true -> shows in the Home "From the library" strip
@@ -28,28 +28,30 @@ CC.projects = {
 /* Sidebar sections with link cards. Add a section = add a block (it gets a sidebar entry). */
 CC.sections = [
   { id: "rokhal", title: "Rokhal Marketing", nav: "Rokhal", icon: "rocket", project: "Rokhal",
-    desc: "Your agency: live site, CRM and domains.", links: [
+    desc: "The agency: live site, road map, CRM and domains.", links: [
     { title: "Live website", sub: "rokhalmarketing.com", url: "https://rokhalmarketing.com", tag: "Live", icon: "globe", color: "#00e5ff" },
-    { title: "Rokhal Road Map", sub: "GitHub Pages", url: "https://rfunes92.github.io/rokhal-roadmap/", tag: "Plan", icon: "map", color: "#7c5cff" },
+    { title: "Rokhal Road Map", sub: "In the hub · /roadmap", url: "roadmap/", tag: "Plan", icon: "map", color: "#7c5cff" },
     { title: "HighLevel dashboard", sub: "GoHighLevel · Rokhal", url: "https://app.gohighlevel.com/v2/location/QSvv2ELnHxcoUpJoQ5H1/dashboard", tag: "CRM", icon: "grid", color: "#22c55e" },
     { title: "HighLevel Websites", sub: "Sites & funnels", url: "https://app.gohighlevel.com/v2/location/QSvv2ELnHxcoUpJoQ5H1/funnels-websites/websites", tag: "Builder", icon: "layout", color: "#3b82f6" },
     { title: "HighLevel Domains", sub: "GoHighLevel · Settings", url: "https://app.gohighlevel.com/v2/location/QSvv2ELnHxcoUpJoQ5H1/settings/domain", tag: "Settings", icon: "link", color: "#f59e0b" },
     { title: "GoDaddy portfolio", sub: "GoDaddy · All domains", url: "https://dcc.godaddy.com/control/portfolio", tag: "Domains", icon: "server", color: "#14b8a6" },
   ]},
-  { id: "blaze", title: "Blaze Electric", nav: "Blaze", icon: "bolt", project: "Blaze",
-    desc: "Client: 24/7 electrician in Brooklyn & NYC.", links: [
-    { title: "Site preview: Home", sub: "LeadConnector preview", url: "https://sites.leadconnectorhq.com/preview/c6BeH0e4UHRuZCT9VT3R", tag: "Client", icon: "bolt", color: "#a855f7" },
-    { title: "Panel Upgrade page", sub: "LeadConnector preview", url: "https://sites.leadconnectorhq.com/preview/dq73xEaZ3LsMNrVpi2CG", tag: "Client", icon: "file", color: "#a855f7" },
+  { id: "blaze", title: "Blaze Electric", nav: "Blaze Electric", icon: "bolt", project: "Blaze",
+    desc: "Client: 24/7 electrician in Brooklyn & NYC. Site previews, listing and DNS.", links: [
+    { title: "Site preview: Home", sub: "LeadConnector preview", url: "https://sites.leadconnectorhq.com/preview/c6BeH0e4UHRuZCT9VT3R", tag: "Preview", icon: "bolt", color: "#a855f7" },
+    { title: "Panel Upgrade page", sub: "LeadConnector preview", url: "https://sites.leadconnectorhq.com/preview/dq73xEaZ3LsMNrVpi2CG", tag: "Preview", icon: "file", color: "#a855f7" },
     { title: "Google Business Profile", sub: "business.google.com", url: "https://business.google.com", tag: "Listing", icon: "pin", color: "#ef4444" },
     { title: "Blaze DNS", sub: "GoDaddy · blazeelectric.com", url: "https://dcc.godaddy.com/control/portfolio/blazeelectric.com/settings", tag: "DNS", icon: "server", color: "#14b8a6" },
   ]},
-  { id: "apps", title: "Apps we built", nav: "Apps", icon: "cube", project: "Apps",
-    desc: "Your own projects.", links: [
-    { title: "Mount Up", sub: "Private for now (Titan)", url: "https://github.com/Rfunes92/workout-app", tag: "App", icon: "dumbbell", color: "#a3e635" },
+  { id: "grace", title: "Grace Auto", nav: "Grace Auto", icon: "car", project: "Grace Auto",
+    desc: "Car sales: logo, Car Guy banners and reserved-sign templates. Assets live in the library below.", links: [] },
+  { id: "apps", title: "Apps", nav: "Apps", icon: "cube", project: "Apps",
+    desc: "Apps we built.", links: [
+    { title: "Mount Up", sub: "Private repo (Titan)", tag: "App", icon: "dumbbell", color: "#a3e635", private: true },
   ]},
   { id: "betting", title: "Betting", nav: "Betting", icon: "trophy", project: "Betting",
     desc: "Football and UFC, run by Edge. Strict bankroll limit; you place every bet.", links: [
-    { title: "Edge Betting HQ", sub: "Top picks, bet log, line shop", url: "betting/", tag: "Edge", icon: "chart", color: "#00e5ff" },
+    { title: "Edge Betting HQ", sub: "In the hub · /betting · syncs every 3h", url: "betting/", tag: "Edge", icon: "chart", color: "#00e5ff" },
     { title: "DraftKings Sportsbook", sub: "sportsbook.draftkings.com", url: "https://sportsbook.draftkings.com", tag: "Book", icon: "trophy", color: "#22c55e" },
     { title: "FanDuel Sportsbook", sub: "sportsbook.fanduel.com", url: "https://sportsbook.fanduel.com", tag: "Book", icon: "trophy", color: "#3b82f6" },
     { title: "Action Network odds", sub: "Lines, splits & movement", url: "https://www.actionnetwork.com/nfl/odds", tag: "Odds", icon: "chart", color: "#00e5ff" },
@@ -60,12 +62,12 @@ CC.sections = [
   ]},
   { id: "money", title: "Money", nav: "Money", icon: "wallet", project: null,
     desc: "Reporting, budget and books. Nothing financial is stored on this site.", links: [
-    { title: "Ronnie Finance", sub: "Password locked (Taylor)", url: "https://ronnie-finance.ronniefunes92.workers.dev/", tag: "Private", icon: "lock", color: "#fbbf24" },
+    { title: "Ronnie Finance", sub: "Cloudflare · password locked", url: "https://ronnie-finance.ronniefunes92.workers.dev/", tag: "Private", icon: "lock", color: "#fbbf24" },
     { title: "YNAB", sub: "app.ynab.com", url: "https://app.ynab.com", tag: "Budget", icon: "wallet", color: "#3b82f6" },
     { title: "QuickBooks", sub: "qbo.intuit.com", url: "https://qbo.intuit.com", tag: "Books", icon: "book", color: "#10b981" },
     { title: "Cursor plan & usage", sub: "cursor.com/dashboard", url: "https://cursor.com/dashboard", tag: "Billing", icon: "gauge", color: "#a78bfa" },
   ]},
-  { id: "planning", title: "Inbox & planning", nav: "Planning", icon: "calendar", project: null,
+  { id: "planning", title: "Inbox & Planning", nav: "Planning", icon: "calendar", project: null,
     desc: "Mail, calendar and boards.", links: [
     { title: "Gmail", sub: "mail.google.com", url: "https://mail.google.com", tag: "Inbox", icon: "mail", color: "#ef4444" },
     { title: "Google Calendar", sub: "calendar.google.com", url: "https://calendar.google.com", tag: "Calendar", icon: "calendar", color: "#3b82f6" },
@@ -143,9 +145,13 @@ CC.projectBoard = [
 /* Home panels */
 CC.statusAsOf = "Oct 23, 2026";
 CC.status = [
-  { state: "Pending", text: "Google Safe Browsing flag on rfunes92.github.io: cleanup done Oct 23 (private sites locked, Blaze mockup now on HighLevel only). Next: Search Console verify + request review" },
+  { state: "Done",    text: "Command Center live on hub.rokhaldigital.com, organized into folders" },
+  { state: "Done",    text: "Edge Betting HQ lives in the hub at /betting (auto-syncs every 3 hours)" },
+  { state: "Done",    text: "Rokhal Road Map moved into the hub at /roadmap" },
+  { state: "Done",    text: "Ronnie Finance card opens the Cloudflare app (password locked)" },
+  { state: "Done",    text: "Mount Up repo set to private" },
   { state: "Done",    text: "rokhalmarketing.com live on the new HighLevel site" },
-  { state: "Done",    text: "Premium plan upgrade" },
+  { state: "Pending", text: "Google Safe Browsing review for rfunes92.github.io (cleanup done Oct 23; next: Search Console verify + request review)" },
   { state: "Ready",   text: "Outreach list of 12 local trades + email template" },
   { state: "Next",    text: "Rokhal website polish, page by page" },
   { state: "Waiting", text: "Blaze site approval from Ellyn" },
