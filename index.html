@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Command Center · Ronnie</title>
+<meta name="description" content="Ronnie's Command Center: every link for Rokhal Marketing, clients, apps, money, and planning.">
+<meta name="theme-color" content="#0b0d10">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Command">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0d10'/%3E%3Crect x='12' y='12' width='17' height='17' rx='4' fill='%2300e5ff'/%3E%3Crect x='35' y='12' width='17' height='17' rx='4' fill='%2300e5ff' opacity='.55'/%3E%3Crect x='12' y='35' width='17' height='17' rx='4' fill='%2300e5ff' opacity='.55'/%3E%3Crect x='35' y='35' width='17' height='17' rx='4' fill='%2300e5ff'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+/* ================= EDIT DATA HERE =================
+   Add a card: copy any { title, url, tag, icon, color } line into a section's links.
+   Optional: sub (small text instead of the domain). Icons: see ICONS below.
+   Add a section: copy a whole { id, title, sub, filter, links } block. A new filter
+   name automatically gets its own chip. Favorites: list card titles in FAVORITES.
+   ================================================== */
+const FAVORITES = ["Live website", "HighLevel dashboard", "Ronnie Finance", "Mount Up"];
+
+const SECTIONS = [
+  { id: "rokhal", title: "Rokhal Marketing", sub: "Your agency, site and back office", filter: "Rokhal", links: [
+    { title: "Live website", sub: "rokhalmarketing.com", url: "https://rokhalmarketing.com", tag: "Live", icon: "globe", color: "#00e5ff" },
+    { title: "Rokhal Road Map", sub: "GitHub Pages", url: "https://rfunes92.github.io/rokhal-roadmap/", tag: "Plan", icon: "map", color: "#7c5cff" },
+    { title: "HighLevel dashboard", sub: "GoHighLevel · Rokhal", url: "https://app.gohighlevel.com/v2/location/QSvv2ELnHxcoUpJoQ5H1/dashboard", tag: "CRM", icon: "grid", color: "#22c55e" },
+    { title: "HighLevel Websites", sub: "GoHighLevel · Sites & funnels", url: "https://app.gohighlevel.com/v2/location/QSvv2ELnHxcoUpJoQ5H1/funnels-websites/websites", tag: "Builder", icon: "layout", color: "#3b82f6" },
+    { title: "HighLevel Domains", sub: "GoHighLevel · Settings", url: "https://app.gohighlevel.com/v2/location/QSvv2ELnHxcoUpJoQ5H1/settings/domain", tag: "Settings", icon: "link", color: "#f59e0b" },
+    { title: "GoDaddy portfolio", sub: "GoDaddy · All domains", url: "https://dcc.godaddy.com/control/portfolio", tag: "Domains", icon: "server", color: "#14b8a6" },
+  ]},
+  { id: "blaze", title: "Blaze Electric", sub: "Client · electrical contractor", filter: "Blaze", links: [
+    { title: "Site preview: Home", sub: "LeadConnector preview", url: "https://sites.leadconnectorhq.com/preview/c6BeH0e4UHRuZCT9VT3R", tag: "Client", icon: "bolt", color: "#f97316" },
+    { title: "Panel Upgrade page", sub: "LeadConnector preview", url: "https://sites.leadconnectorhq.com/preview/dq73xEaZ3LsMNrVpi2CG", tag: "Client", icon: "file", color: "#f97316" },
+    { title: "Homepage mockup", sub: "GitHub Pages", url: "https://rfunes92.github.io/blaze-electric-preview/", tag: "Mockup", icon: "image", color: "#ec4899" },
+    { title: "Google Business Profile", url: "https://business.google.com", tag: "Listing", icon: "pin", color: "#ef4444" },
+    { title: "Blaze DNS", sub: "GoDaddy · blazeelectric.com", url: "https://dcc.godaddy.com/control/portfolio/blazeelectric.com/settings", tag: "DNS", icon: "server", color: "#14b8a6" },
+  ]},
+  { id: "apps", title: "Apps we built", sub: "Your own projects", filter: "Apps", links: [
+    { title: "Mount Up", sub: "Workout app", url: "https://rfunes92.github.io/workout-app/", tag: "App", icon: "dumbbell", color: "#a3e635" },
+  ]},
+  { id: "money", title: "Money", sub: "Reporting, budget and books", filter: "Money", links: [
+    { title: "Ronnie Finance", sub: "Financial reporting site", url: "https://rfunes92.github.io/ronnie-finance-site/", tag: "Finance", icon: "chart", color: "#22c55e" },
+    { title: "YNAB", url: "https://app.ynab.com", tag: "Budget", icon: "wallet", color: "#3b82f6" },
+    { title: "QuickBooks", url: "https://qbo.intuit.com", tag: "Books", icon: "book", color: "#10b981" },
+    { title: "Cursor plan & usage", url: "https://cursor.com/dashboard", tag: "Billing", icon: "gauge", color: "#a78bfa" },
+  ]},
+  { id: "planning", title: "Inbox & planning", sub: "Mail, calendar and boards", filter: "Planning", links: [
+    { title: "Gmail", url: "https://mail.google.com", tag: "Inbox", icon: "mail", color: "#ef4444" },
+    { title: "Google Calendar", url: "https://calendar.google.com", tag: "Calendar", icon: "calendar", color: "#3b82f6" },
+    { title: "Trello", url: "https://trello.com", tag: "Boards", icon: "kanban", color: "#0ea5e9" },
+  ]},
+];
+
+const STATUS_AS_OF = "Oct 22, 2026";
+const STATUS = [
+  { state: "Done",    text: "rokhalmarketing.com live on the new HighLevel site" },
+  { state: "Done",    text: "Premium plan upgrade" },
+  { state: "Ready",   text: "Outreach list of 12 local trades + email template" },
+  { state: "Next",    text: "Rokhal website polish, page by page" },
+  { state: "Waiting", text: "Blaze site approval from Ellyn" },
+  { state: "Pending", text: "Blaze Google listing claim (check Oct 26)" },
+];
+
+const GOAL = { signed: 0, target: 3, deadline: "2026-11-15", prospects: 12 };
+const UP_NEXT = "Polish the Rokhal site page by page, then send the first outreach emails Friday morning.";
+/* ================================================== */
+</script>
+<style>
+:root{
+  --bg:#0b0d10; --bg2:#0f1216; --card:#13171c; --card2:#171c22; --line:#232a32; --line2:#2d3640;
+  --text:#e8edf2; --muted:#8b96a3; --dim:#5d6875; --cyan:#00e5ff; --cyan-soft:rgba(0,229,255,.12);
+  --r:16px; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:radial-gradient(900px 420px at 85% -10%,rgba(0,229,255,.08),transparent 60%),radial-gradient(700px 380px at -10% 10%,rgba(124,92,255,.06),transparent 60%);background-attachment:fixed}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1240px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top)) 28px 64px}
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:46px;height:46px;border-radius:13px;background:#000;border:1px solid var(--line2);display:grid;place-items:center;box-shadow:0 0 24px rgba(0,229,255,.18)}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);font-weight:700}
+h1{margin:2px 0 0;font-size:30px;font-weight:800;letter-spacing:-.02em}
+.greet{color:var(--muted);margin-top:4px;font-size:15px}
+.greet b{color:var(--text);font-weight:600}
+.clock{text-align:right;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;box-shadow:var(--shadow)}
+.clock .t{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.clock .d{color:var(--muted);font-size:13px}
+.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:6px 0 22px}
+.search{flex:1 1 300px;position:relative}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--dim)}
+.kbd{position:absolute;right:12px;top:50%;transform:translateY(-50%);font:600 12px Inter,system-ui;color:var(--dim);border:1px solid var(--line2);border-radius:6px;padding:2px 7px;background:var(--bg2);pointer-events:none}
+.search input:focus ~ .kbd,.search input:not(:placeholder-shown) ~ .kbd{display:none}
+@media (hover:none){.kbd{display:none}}
+.search input{width:100%;height:46px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit;padding:0 14px 0 42px;outline:none;transition:border-color .15s,box-shadow .15s}
+.search input::placeholder{color:var(--dim)}
+.search input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyan-soft)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .15s}
+.chip:hover{color:var(--text);border-color:var(--line2)}
+.chip.on{background:var(--cyan);color:#001318;border-color:var(--cyan);box-shadow:0 0 16px rgba(0,229,255,.35)}
+.upnext{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:var(--r);border:1px solid rgba(0,229,255,.35);background:linear-gradient(90deg,rgba(0,229,255,.12),rgba(0,229,255,.02) 70%),var(--card);margin-bottom:22px;box-shadow:var(--shadow)}
+.upnext .ic{flex:none;width:38px;height:38px;border-radius:11px;background:var(--cyan);color:#001318;display:grid;place-items:center}
+.upnext .lbl{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);font-weight:700}
+.upnext .txt{font-weight:600;font-size:15.5px}
+.panels{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:30px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
+.panel h2{margin:0;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.panel .meta{color:var(--dim);font-size:12.5px;margin:2px 0 14px}
+.status{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.status li{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:11px;background:var(--bg2);border:1px solid var(--line)}
+.pill{flex:none;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;min-width:68px;text-align:center;letter-spacing:.02em}
+.s-Done{background:rgba(34,197,94,.14);color:#4ade80}
+.s-Ready{background:rgba(0,229,255,.14);color:var(--cyan)}
+.s-Next{background:rgba(124,92,255,.18);color:#a78bfa}
+.s-Waiting{background:rgba(245,158,11,.15);color:#fbbf24}
+.s-Pending{background:rgba(148,163,184,.14);color:#cbd5e1}
+.goal-num{display:flex;align-items:baseline;gap:8px;margin:4px 0 12px}
+.goal-num .big{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.goal-num .of{color:var(--muted);font-weight:600}
+.bar{height:10px;border-radius:999px;background:var(--bg2);border:1px solid var(--line);overflow:hidden}
+.bar > i{display:block;height:100%;background:linear-gradient(90deg,#00b8cc,var(--cyan));box-shadow:0 0 12px rgba(0,229,255,.6);border-radius:999px;min-width:6px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.stat{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .k{font-size:12px;color:var(--muted)}
+.stat.hl .v{color:var(--cyan)}
+section.sec{margin-bottom:30px}
+.sec-head{display:flex;align-items:baseline;gap:10px;margin:0 0 12px;flex-wrap:wrap}
+.sec-head h2{margin:0;font-size:18px;font-weight:700;letter-spacing:-.01em}
+.sec-head .sub{color:var(--dim);font-size:13px}
+.sec-head .count{margin-left:auto;color:var(--dim);font-size:12.5px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{position:relative;display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:var(--r);background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);box-shadow:var(--shadow);transition:transform .18s ease,border-color .18s,box-shadow .18s;min-width:0}
+.card:hover,.card:focus-visible{transform:translateY(-3px);border-color:rgba(0,229,255,.55);box-shadow:0 10px 30px rgba(0,0,0,.4),0 0 0 1px rgba(0,229,255,.25),0 0 24px rgba(0,229,255,.18);outline:none}
+.tile{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center}
+.card .body{min-width:0;flex:1}
+.card .ttl{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:18px}
+.card .site{color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.card .tag{display:inline-block;margin-top:9px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg2);border:1px solid var(--line2);color:var(--muted);letter-spacing:.02em}
+.card .arrow{position:absolute;top:14px;right:14px;color:var(--dim);transition:color .15s,transform .15s}
+.card:hover .arrow{color:var(--cyan);transform:translate(2px,-2px)}
+.empty{display:none;text-align:center;color:var(--muted);padding:48px 0}
+footer{color:var(--dim);font-size:12.5px;text-align:center;margin-top:20px}
+@media (max-width:900px){.panels{grid-template-columns:1fr}}
+@media (max-width:600px){
+  .wrap{padding:calc(18px + env(safe-area-inset-top)) 16px 48px}
+  h1{font-size:25px}
+  header.top{align-items:flex-start}
+  .clock{text-align:left;width:100%;display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px}
+  .clock .t{font-size:20px}
+  .chips{flex-wrap:wrap}
+  .chip{height:34px;padding:0 12px;font-size:13px}
+  .grid{grid-template-columns:1fr 1fr;gap:10px}
+  .card{flex-direction:column;gap:10px;padding:14px}
+  .card .ttl{white-space:normal;font-size:14px;line-height:1.3}
+  .tile{width:38px;height:38px}
+  .card .body{align-self:stretch;width:100%}
+  .stats{gap:8px}
+  .goal-num .big{font-size:38px}
+}
+@media (max-width:340px){.grid{grid-template-columns:1fr}}
+
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.card{animation:up .45s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 28ms);min-height:84px}
+.upnext,.panel,header.top,.toolbar{animation:up .5s cubic-bezier(.2,.7,.2,1) both}
+.card:active{transform:translateY(-1px) scale(.99)}
+.sec-head h2{display:flex;align-items:center;gap:8px}
+.fav-grid{grid-template-columns:repeat(4,1fr)}
+.fav-grid .card{background:linear-gradient(180deg,rgba(0,229,255,.06),var(--card) 70%);border-color:#26323b}
+.fav-grid .tile{width:48px;height:48px}
+.empty{flex-direction:column;align-items:center;gap:8px}
+.empty .et{font-weight:600;color:var(--text);font-size:16px}
+.empty .es{font-size:14px}
+.linkbtn{background:none;border:0;color:var(--cyan);font:inherit;cursor:pointer;padding:0;text-decoration:underline}
+.card .tag{background:rgba(255,255,255,.03)}
+@media (max-width:900px){.fav-grid{grid-template-columns:1fr 1fr}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="logo"><svg width="24" height="24" viewBox="0 0 64 64"><rect x="8" y="8" width="20" height="20" rx="5" fill="#00e5ff"/><rect x="36" y="8" width="20" height="20" rx="5" fill="#00e5ff" opacity=".55"/><rect x="8" y="36" width="20" height="20" rx="5" fill="#00e5ff" opacity=".55"/><rect x="36" y="36" width="20" height="20" rx="5" fill="#00e5ff"/></svg></div>
+      <div>
+        <div class="eyebrow">Rokhal Marketing</div>
+        <h1>Command Center</h1>
+        <div class="greet" id="greet">Hello, <b>Ronnie</b></div>
+      </div>
+    </div>
+    <div class="clock"><div class="t" id="time">--:--</div><div class="d" id="date"></div></div>
+  </header>
+
+  <div class="toolbar">
+    <label class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search links…" autocomplete="off" aria-label="Search links">
+      <kbd class="kbd">/</kbd>
+    </label>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="upnext">
+    <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div><div class="lbl">Up next</div><div class="txt" id="upnext"></div></div>
+  </div>
+
+  <div class="panels" id="panels">
+    <div class="panel">
+      <h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Where things stand</h2>
+      <div class="meta" id="asof"></div>
+      <ul class="status" id="status"></ul>
+    </div>
+    <div class="panel">
+      <h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4a1 1 0 0 1 1-1h11l-2 4 2 4H5"/></svg>Road to 3 clients</h2>
+      <div class="meta" id="goalmeta"></div>
+      <div class="goal-num"><span class="big" id="signed">0</span><span class="of" id="of">of 3 signed</span></div>
+      <div class="bar"><i id="barfill"></i></div>
+      <div class="stats">
+        <div class="stat hl"><div class="v" id="daysleft">-</div><div class="k">days left</div></div>
+        <div class="stat"><div class="v" id="prospects">-</div><div class="k">prospects ready</div></div>
+        <div class="stat"><div class="v" id="deadline">-</div><div class="k">deadline</div></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="sec fav" id="favs"></section>
+  <main id="sections"></main>
+  <div class="empty" id="empty"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#5d6875" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><div class="et">No links match "<span id="eterm"></span>"</div><div class="es">Try a different word, or <button id="clear" class="linkbtn">clear the search</button>.</div></div>
+  <footer>Ronnie's Command Center · Rokhal Marketing</footer>
+</div>
+
+<script>
+const ICONS = {
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  map:'<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  layout:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/>',
+  link:'<path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/>',
+  server:'<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>',
+  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/>',
+  file:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
+  image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+  pin:'<path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
+  dumbbell:'<path d="M6 6v12M18 6v12M3 9v6M21 9v6M6 12h12"/>',
+  chart:'<path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/>',
+  wallet:'<rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/><path d="M6 6V5a2 2 0 0 1 2-2h9"/>',
+  book:'<path d="M4 4h10a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M4 16a4 4 0 0 1 4-4h10"/>',
+  gauge:'<path d="M12 14l4-4"/><path d="M3.5 18a9 9 0 1 1 17 0"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  kanban:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 7v8M12 7v4M16 7v10"/>',
+};
+const svg = (name, color, size=20) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||ICONS.link}</svg>`;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const host = u => { try { const x = new URL(u); return (x.hostname.replace(/^www\./,'') + (x.pathname.length>1 ? x.pathname : '')).replace(/\/$/,''); } catch { return u; } };
+const hexA = (h,a) => { const n=parseInt(h.slice(1),16); return `rgba(${n>>16},${(n>>8)&255},${n&255},${a})`; };
+
+// Sections
+const main = document.getElementById('sections');
+const cardHTML = (l, secTitle, i) => `
+      <a class="card" style="--i:${i}" href="${esc(l.url)}" target="_blank" rel="noopener" title="${esc(l.url)}" data-q="${esc((l.title+' '+(l.sub||'')+' '+l.tag+' '+host(l.url)+' '+secTitle).toLowerCase())}">
+        <div class="tile" style="background:${hexA(l.color,.14)};border:1px solid ${hexA(l.color,.28)}">${svg(l.icon,l.color)}</div>
+        <div class="body">
+          <div class="ttl">${esc(l.title)}</div>
+          <div class="site">${esc(l.sub || host(l.url).split('/')[0])}</div>
+          <span class="tag">${esc(l.tag)}</span>
+        </div>
+        <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>
+      </a>`;
+let n0 = 0;
+const allLinks = SECTIONS.flatMap(s => s.links.map(l => ({...l, sec: s.title})));
+const favLinks = FAVORITES.map(t => allLinks.find(l => l.title === t)).filter(Boolean);
+document.getElementById('favs').innerHTML = favLinks.length ? `
+    <div class="sec-head"><h2><svg width="16" height="16" viewBox="0 0 24 24" fill="#00e5ff"><path d="m12 2 3 6.6 7 .8-5.2 4.8 1.4 7L12 17.7 5.8 21.2l1.4-7L2 9.4l7-.8z"/></svg>Favorites</h2><span class="sub">Your most-used</span></div>
+    <div class="grid fav-grid">${favLinks.map(l => cardHTML(l, l.sec, n0++)).join('')}</div>` : '';
+main.innerHTML = SECTIONS.map(s => `
+  <section class="sec" data-filter="${s.filter}">
+    <div class="sec-head"><h2>${esc(s.title)}</h2><span class="sub">${esc(s.sub||'')}</span><span class="count"></span></div>
+    <div class="grid">${s.links.map(l => cardHTML(l, s.title, n0++)).join('')}</div>
+  </section>`).join('');
+
+// Chips + search
+const FILTERS = ["All", ...new Set(SECTIONS.map(s => s.filter))];
+let active = "All";
+const chipsEl = document.getElementById('chips');
+chipsEl.innerHTML = FILTERS.map(f => `<button class="chip${f==='All'?' on':''}" data-f="${f}">${f}</button>`).join('');
+chipsEl.addEventListener('click', e => { const b = e.target.closest('.chip'); if(!b) return; active = b.dataset.f; chipsEl.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c===b)); apply(); });
+const q = document.getElementById('q');
+q.addEventListener('input', apply);
+document.addEventListener('keydown', e => { if (e.key==='/' && document.activeElement!==q){ e.preventDefault(); q.focus(); } if (e.key==='Escape'){ q.value=''; apply(); q.blur(); } });
+function apply(){
+  const term = q.value.trim().toLowerCase(); let total = 0;
+  document.querySelectorAll('#sections section.sec').forEach(sec => {
+    const okSec = active==='All' || sec.dataset.filter===active; let n = 0;
+    sec.querySelectorAll('.card').forEach(c => { const ok = okSec && (!term || term.split(/\s+/).every(t => c.dataset.q.includes(t))); c.style.display = ok?'':'none'; if(ok) n++; });
+    sec.style.display = n ? '' : 'none';
+    sec.querySelector('.count').textContent = n + (n===1?' link':' links');
+    total += n;
+  });
+  const home = active==='All' && !term;
+  document.getElementById('panels').style.display = home ? '' : 'none';
+  document.getElementById('favs').style.display = home ? '' : 'none';
+  document.querySelector('.upnext').style.display = home ? '' : 'none';
+  document.getElementById('eterm').textContent = q.value.trim();
+  document.getElementById('empty').style.display = total ? 'none' : 'flex';
+}
+document.getElementById('clear').onclick = () => { q.value=''; active='All'; chipsEl.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.f==='All')); apply(); q.focus(); };
+apply();
+
+// Status + goal
+document.getElementById('upnext').textContent = UP_NEXT;
+document.getElementById('asof').textContent = 'Status as of ' + STATUS_AS_OF;
+document.getElementById('status').innerHTML = STATUS.map(s => `<li><span class="pill s-${s.state}">${s.state}</span><span>${esc(s.text)}</span></li>`).join('');
+const TZ = 'America/New_York';
+const nyParts = d => Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'numeric',hourCycle:'h23'}).formatToParts(d).map(p=>[p.type,p.value]));
+function renderGoal(){
+  const p = nyParts(new Date());
+  const today = Date.UTC(+p.year, +p.month-1, +p.day);
+  const [y,m,d] = GOAL.deadline.split('-').map(Number);
+  const left = Math.max(0, Math.round((Date.UTC(y,m-1,d) - today)/864e5));
+  document.getElementById('signed').textContent = GOAL.signed;
+  document.getElementById('of').textContent = `of ${GOAL.target} signed`;
+  document.getElementById('barfill').style.width = Math.min(100, GOAL.signed/GOAL.target*100) + '%';
+  document.getElementById('daysleft').textContent = left;
+  document.getElementById('prospects').textContent = GOAL.prospects;
+  document.getElementById('deadline').textContent = new Date(Date.UTC(y,m-1,d,12)).toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'});
+  document.getElementById('goalmeta').textContent = left ? `${left} day${left===1?'':'s'} to sign ${GOAL.target - GOAL.signed} more` : 'Deadline reached';
+}
+// Clock + greeting
+function tick(){
+  const now = new Date();
+  document.getElementById('time').textContent = now.toLocaleTimeString('en-US',{timeZone:TZ,hour:'numeric',minute:'2-digit'});
+  document.getElementById('date').textContent = now.toLocaleDateString('en-US',{timeZone:TZ,weekday:'long',month:'long',day:'numeric',year:'numeric'}) + ' · ET';
+  const h = +nyParts(now).hour;
+  const g = h < 5 ? 'Up late' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greet').innerHTML = `${g}, <b>Ronnie</b>`;
+}
+tick(); renderGoal();
+setInterval(tick, 1000); setInterval(renderGoal, 60000);
+</script>
+</body>
+</html>
