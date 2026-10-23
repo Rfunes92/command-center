@@ -45,7 +45,7 @@ CC.sections = [
   ]},
   { id: "apps", title: "Apps we built", nav: "Apps", icon: "cube", project: "Apps",
     desc: "Your own projects.", links: [
-    { title: "Mount Up", sub: "Workout app", url: "https://rfunes92.github.io/workout-app/", tag: "App", icon: "dumbbell", color: "#a3e635" },
+    { title: "Mount Up", sub: "Private for now (Titan)", url: "https://github.com/Rfunes92/workout-app", tag: "App", icon: "dumbbell", color: "#a3e635" },
   ]},
   { id: "betting", title: "Betting", nav: "Betting", icon: "trophy", project: "Betting",
     desc: "Football and UFC, run by Edge. Strict bankroll limit; you place every bet.", links: [
