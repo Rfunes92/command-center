@@ -70,6 +70,10 @@ Video/audio (keep each file under ~25 MB; larger files go on the "private" list 
 { title: "VO take", kind: "audio", project: "Rokhal", src: "assets/media/vo.mp3", size: 88000, added: "2026-10-30" },
 ```
 
+## Team and Projects
+- `CC.team`: AI teammates in the Team view, `{ name, initials, role, lanes: [], projects: [], color }`. No links, by design.
+- `CC.projectBoard`: the Home "Projects" cards, `{ project, next, owner, view }`. `owner` should match a team member's name, and `view` is a sidebar id (or e.g. `media?p=Torque%20Legion`).
+
 ## Home panels
 `CC.status` / `CC.statusAsOf` (states: Done, Ready, Next, Waiting, Pending), `CC.goal` (days left are computed automatically), `CC.upNext`.
 
@@ -78,4 +82,9 @@ Video/audio (keep each file under ~25 MB; larger files go on the "private" list 
 - `↑ ↓ Enter`: move and open in the palette
 - In the lightbox, `← →` move between images and `Esc` closes (swipe on a phone)
 
-Commit and push to `main`. GitHub Pages updates in about a minute.
+## Publishing
+Run `scripts/bump.sh` right before committing. It sets `?v=<unix time>` on every local script and stylesheet in `index.html`, so phones and browsers fetch the new version instead of a cached one. Then commit and push to `main`; GitHub Pages updates in about a minute.
+
+```bash
+scripts/bump.sh && git add -A && git commit -m "Update" && git push
+```

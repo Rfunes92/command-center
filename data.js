@@ -119,6 +119,27 @@ CC.media = [
   { title: "Blaze video voice reference", kind: "video", project: "Blaze", size: 7010051, added: "2026-10-22", private: true, note: "Private, not published (voice sample)" },
 ];
 
+/* AI teammates shown in the Team view (no links: their chats are not web URLs).
+   { name, initials, role, lanes: [..], projects: [..], color } */
+CC.team = [
+  { name: "Becca",      initials: "BE", role: "Main assistant & coordinator", lanes: ["Day-to-day help", "Coordinates the team", "Inbox & planning"], projects: ["Rokhal", "Blaze"], color: "#00e5ff" },
+  { name: "Grace",      initials: "GR", role: "Site builds", lanes: ["Grace Auto", "Rokhal site builds", "Client websites"], projects: ["Grace Auto", "Rokhal", "Blaze"], color: "#3b82f6" },
+  { name: "Serene",     initials: "SE", role: "Social media & brand", lanes: ["Social media", "Torque Legion brand"], projects: ["Torque Legion"], color: "#f59e0b" },
+  { name: "Titan",      initials: "TI", role: "Fitness coach", lanes: ["Fitness", "Mount Up app"], projects: ["Apps"], color: "#a3e635" },
+  { name: "Taylor",     initials: "TA", role: "Household CFO", lanes: ["Household money"], projects: [], color: "#a78bfa" },
+  { name: "Rokhal CFO", initials: "RC", role: "Business books", lanes: ["Rokhal bookkeeping"], projects: ["Rokhal"], color: "#14b8a6" },
+  { name: "Edge",       initials: "ED", role: "Betting analyst", lanes: ["Football", "UFC"], projects: ["Betting"], color: "#22c55e" },
+];
+
+/* Projects overview on Home: one compact card per project. view = sidebar id or a #/ link. */
+CC.projectBoard = [
+  { project: "Rokhal",        next: "Polish the site page by page, then send the first outreach emails Friday morning", owner: "Grace", view: "rokhal" },
+  { project: "Blaze",         next: "Waiting on Ellyn's site approval; check the Google listing claim Oct 26", owner: "Grace", view: "blaze" },
+  { project: "Betting",       next: "Edge preps the football and UFC slates; you place every bet", owner: "Edge", view: "betting" },
+  { project: "Apps",          next: "Keep improving Mount Up", owner: "Titan", view: "apps" },
+  { project: "Torque Legion", next: "Build out the brand and social presence", owner: "Serene", view: "media?p=Torque%20Legion" },
+];
+
 /* Home panels */
 CC.statusAsOf = "Oct 22, 2026";
 CC.status = [

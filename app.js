@@ -54,6 +54,7 @@ const P = {
   mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
   calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
   kanban:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 7v8M12 7v4M16 7v10"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>',
   flag:'<path d="M5 21V4h11l-2 4 2 4H5"/>',
   list:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
 };
@@ -68,6 +69,7 @@ const MEDIA = CC.media.map((m, i) => ({ ...m, id: "m" + i + "-" + slug(m.title) 
 const host = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
 const VIEWS = [
   { id: "home", label: "Home", icon: "home", group: "Overview" },
+  { id: "team", label: "Team", icon: "users", group: "Overview", count: (CC.team || []).length },
   ...CC.sections.map(s => ({ id: s.id, label: s.nav || s.title, icon: s.icon || "grid", group: "Workspace", count: s.links.length, section: s })),
   { id: "files", label: "Files", icon: "folder", group: "Library", count: FILES.length },
   { id: "media", label: "Images & Media", icon: "photo", group: "Library", count: MEDIA.length },
@@ -97,13 +99,13 @@ async function copy(text) {
 
 /* ---------- renderers ---------- */
 const cardHTML = (c, i = 0) => `
-  <div class="card${isFav(c.id) ? " pinned-card" : ""}" style="--i:${i}" role="link" tabindex="0" data-open-card="${c.id}" title="${esc(c.url)}">
+  <div class="card${isFav(c.id) ? " pinned-card" : ""}" style="--i:${i}" role="link" tabindex="0" data-open-card="${c.id}" title="${esc(c.url)}" aria-label="${esc(c.title)}, ${esc(c.sub || host(c.url))}, opens in a new tab">
     <div class="tile" style="background:${hexA(c.color, .14)};border:1px solid ${hexA(c.color, .3)}">${ic(c.icon, 20, c.color)}</div>
     <div class="body"><div class="ttl">${esc(c.title)}</div><div class="site">${esc(c.sub || host(c.url))}</div><span class="tag">${esc(c.tag)}</span></div>
     ${isFav(c.id) ? `<span class="star">${ic("star", 14, "#fbbf24", 2, "#fbbf24")}</span>` : ""}
     <div class="acts">
-      <button class="copy" data-copy="${esc(c.url)}" title="Copy link" aria-label="Copy link">${ic("copy", 15)}</button>
-      <button class="pin${isFav(c.id) ? " pinned" : ""}" data-fav="${c.id}" title="${isFav(c.id) ? "Unpin" : "Pin to Favorites"}" aria-label="Pin">${ic("star", 15, "currentColor", 2, isFav(c.id) ? "currentColor" : "none")}</button>
+      <button class="copy" data-copy="${esc(c.url)}" title="Copy link" aria-label="Copy link to ${esc(c.title)}">${ic("copy", 15)}</button>
+      <button class="pin${isFav(c.id) ? " pinned" : ""}" data-fav="${c.id}" title="${isFav(c.id) ? "Unpin" : "Pin to Favorites"}" aria-label="${isFav(c.id) ? "Unpin" : "Pin"} ${esc(c.title)}" aria-pressed="${isFav(c.id)}">${ic("star", 15, "currentColor", 2, isFav(c.id) ? "currentColor" : "none")}</button>
     </div>
   </div>`;
 
@@ -130,11 +132,16 @@ const isLogoish = m => m.type === "Logo" || (m.w && m.w < 600 && m.h < 600);
 function mediaTile(m, i) {
   if (m.private) return `<div class="tilem priv" style="--i:${i}"><div class="lockph">${ic("lock", 30, "#fbbf24", 1.8)}</div><div class="meta"><div style="min-width:0;flex:1"><div class="mt">${esc(m.title)}</div><div class="ms">${esc(m.note || "Private")}</div></div>${lockB()}</div></div>`;
   let top = "";
-  if (m.kind === "image") top = `<button class="ph${isLogoish(m) ? " contain" : ""}" data-lb="${m.id}" aria-label="Preview ${esc(m.title)}"><img src="${esc(m.thumb || m.src)}" alt="${esc(m.title)}" loading="lazy" ${m.w && !isLogoish(m) ? `width="${m.w}" height="${Math.round(m.h > m.w * 1.6 ? m.w * .75 : m.h)}"` : ""}><span class="kind">${esc(m.type || "Image")}</span></button>`;
-  else if (m.kind === "video") top = `<video controls playsinline preload="none" poster="${esc(m.poster || "")}" data-rec="media:${m.id}"><source src="${esc(m.src)}" type="video/mp4">${m.captions ? `<track kind="captions" src="${esc(m.captions)}" srclang="en" label="English">` : ""}</video>`;
-  else if (m.kind === "audio") top = `<div class="au"><div class="wave">${Array.from({ length: 34 }, (_, k) => `<i style="height:${18 + Math.round(Math.abs(Math.sin(k * 1.7) * Math.cos(k * .45)) * 82)}%"></i>`).join("")}</div><audio controls preload="none" src="${esc(m.src)}" data-rec="media:${m.id}"></audio></div>`;
-  return `<div class="tilem" style="--i:${i}">${top}<div class="meta"><div style="min-width:0;flex:1"><div class="mt">${esc(m.title)}</div><div class="ms">${esc(m.project)} · ${m.kind === "image" ? esc(m.type || "Image") : m.kind === "video" ? "Video" : "Audio"} · ${fmtSize(m.size)}</div></div><a class="dl" href="${esc(m.src)}" download title="Download" aria-label="Download">${ic("download", 15)}</a></div></div>`;
+  if (m.kind === "image") top = `<button class="ph${isLogoish(m) ? " contain" : ""}" data-lb="${m.id}" aria-label="Preview ${esc(m.title)}"><img src="${esc(m.thumb || m.src)}" alt="${esc(m.title)}" loading="lazy" decoding="async" ${m.w && !isLogoish(m) ? `width="${m.w}" height="${Math.round(m.h > m.w * 1.6 ? m.w * .75 : m.h)}"` : ""}><span class="kind">${esc(m.type || "Image")}</span></button>`;
+  else if (m.kind === "video") top = `<video controls playsinline preload="none" aria-label="${esc(m.title)}" poster="${esc(m.poster || "")}" data-rec="media:${m.id}"><source src="${esc(m.src)}" type="video/mp4">${m.captions ? `<track kind="captions" src="${esc(m.captions)}" srclang="en" label="English">` : ""}</video>`;
+  else if (m.kind === "audio") top = `<div class="au"><div class="wave">${Array.from({ length: 34 }, (_, k) => `<i style="height:${18 + Math.round(Math.abs(Math.sin(k * 1.7) * Math.cos(k * .45)) * 82)}%"></i>`).join("")}</div><audio controls preload="none" aria-label="${esc(m.title)}" src="${esc(m.src)}" data-rec="media:${m.id}"></audio></div>`;
+  return `<div class="tilem" style="--i:${i}">${top}<div class="meta"><div style="min-width:0;flex:1"><div class="mt">${esc(m.title)}</div><div class="ms">${esc(m.project)} · ${m.kind === "image" ? esc(m.type || "Image") : m.kind === "video" ? "Video" : "Audio"} · ${fmtSize(m.size)}</div></div><a class="dl" href="${esc(m.src)}" download title="Download" aria-label="Download ${esc(m.title)}">${ic("download", 15)}</a></div></div>`;
 }
+const TEAM = CC.team || [];
+const member = n => TEAM.find(t => t.name === n);
+const lum = h => { const n = parseInt(h.slice(1), 16); return (.299 * (n >> 16) + .587 * ((n >> 8) & 255) + .114 * (n & 255)) / 255; };
+const avatar = (m, size = 40) => m ? `<span class="av" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .36)}px;color:${lum(m.color) > .6 ? "#061015" : "#fff"};background:linear-gradient(135deg,${hexA(m.color, .9)},${hexA(m.color, .45)});box-shadow:0 0 0 2px var(--bg),0 0 0 3px ${hexA(m.color, .5)}" aria-hidden="true">${esc(m.initials)}</span>` : "";
+const projHref = v => "#/" + v;
 const emptyHTML = (t, s) => `<div class="empty">${ic("folder", 30, "#5f6a77", 1.6)}<div class="et">${esc(t)}</div><div>${s}</div></div>`;
 
 function nyNow() {
@@ -175,13 +182,18 @@ V.home = () => {
       <div class="bar" title="${g.signed} of ${g.target} signed"><i style="width:${pct * 100}%"></i></div>
     </div>
   </div>
+  ${(CC.projectBoard || []).length ? `<div class="sec-head"><h2>${ic("cube", 16, "#00e5ff")}Projects</h2><span class="sub">Next step and owner</span><span class="right"><a class="linkbtn" href="#/team">Meet the team →</a></span></div>
+  <div class="projects">${CC.projectBoard.map((p, i) => { const m = member(p.owner); return `<a class="proj" href="${projHref(p.view)}" style="--i:${i};--pc:${projColor(p.project)}" aria-label="${esc(p.project)}: next step ${esc(p.next)}. Owner ${esc(p.owner)}">
+    <div class="ph1"><span class="pdot"></span><span class="pn">${esc(p.project)}</span>${ic("ext", 14, "currentColor")}</div>
+    <div class="pnext"><span class="pk">Next</span>${esc(p.next)}</div>
+    <div class="pown">${avatar(m, 26)}<span>${esc(p.owner)}</span>${m ? `<span class="prole">${esc(m.role)}</span>` : ""}</div></a>`; }).join("")}</div>` : ""}
   <div class="sec-head"><h2>${ic("star", 16, "#fbbf24", 2, "#fbbf24")}Favorites</h2><span class="sub">Tap the star on any card to pin or unpin</span></div>
   ${favCards.length ? `<div class="grid">${favCards.map(cardHTML).join("")}</div>` : emptyHTML("No favorites yet", "Hover a card and tap the star to pin it here.")}
   <div class="sec-head"><h2>${ic("clock", 16, "#00e5ff")}Recently opened</h2><span class="sub">On this device</span>${rec.length ? `<span class="right"><button class="linkbtn" data-act="clear-recent">Clear</button></span>` : ""}</div>
-  ${rec.length ? `<div class="recent">${rec.map(r => `<div class="ritem" ${r.attr} tabindex="0"><div class="mini" style="background:${hexA(r.color, .14)}">${ic(r.icon, 15, r.color)}</div><div style="min-width:0;flex:1"><div class="rt">${esc(r.t)}</div><div class="rs">${esc(r.s)} · ${ago(r.t0)}</div></div></div>`).join("")}</div>`
+  ${rec.length ? `<div class="recent">${rec.map(r => `<div class="ritem" ${r.attr} tabindex="0" role="link" aria-label="${esc(r.t)}, ${esc(r.s)}"><div class="mini" style="background:${hexA(r.color, .14)}">${ic(r.icon, 15, r.color)}</div><div style="min-width:0;flex:1"><div class="rt">${esc(r.t)}</div><div class="rs">${esc(r.s)} · ${ago(r.t0)}</div></div></div>`).join("")}</div>`
     : `<div class="empty" style="padding:22px">Anything you open (cards, files, images) shows up here for one-tap access.</div>`}
   <div class="sec-head"><h2>${ic("photo", 16, "#00e5ff")}From the library</h2><span class="sub">${MEDIA.filter(m => !m.private).length} images & clips, ${FILES.filter(f => !f.private).length} files</span><span class="right"><a class="linkbtn" href="#/media">Open Images & Media →</a></span></div>
-  <div class="strip">${imgs.map(m => `<button data-lb="${m.id}" aria-label="${esc(m.title)}"><img src="${esc(m.thumb)}" alt="${esc(m.title)}" loading="lazy"></button>`).join("")}</div>`;
+  <div class="strip">${imgs.map(m => `<button data-lb="${m.id}" aria-label="${esc(m.title)}"><img src="${esc(m.thumb)}" alt="${esc(m.title)}" loading="lazy" decoding="async"></button>`).join("")}</div>`;
 };
 
 function sectionView(s) {
@@ -230,6 +242,14 @@ function drawMedia() {
   $("#gal").innerHTML = list.length ? list.map(mediaTile).join("") : "";
   if (!list.length) $("#gal").outerHTML = `<div id="gal">${emptyHTML("Nothing here yet", "Try another filter.")}</div>`;
 }
+V.team = () => `
+  <div class="hero"><div><div class="eyebrow">${ic("users", 13, "#00e5ff", 2.4)}Overview</div><h1>Team</h1><p>Your AI teammates and their lanes. Message them in their own chats; there are no links here on purpose.</p></div></div>
+  <div class="team">${TEAM.map((m, i) => `<article class="mate" id="mate-${slug(m.name)}" style="--i:${i};--mc:${m.color}" tabindex="-1" aria-labelledby="mn-${slug(m.name)}">
+    <div class="mh">${avatar(m, 52)}<div style="min-width:0"><h3 id="mn-${slug(m.name)}">${esc(m.name)}</h3><div class="mrole">${esc(m.role)}</div></div></div>
+    <div class="mlab">Lanes</div><ul class="lanes">${m.lanes.map(l => `<li>${esc(l)}</li>`).join("")}</ul>
+    ${m.projects.length ? `<div class="mproj">${m.projects.map(ptag).join("")}</div>` : ""}
+    ${(CC.projectBoard || []).filter(p => p.owner === m.name).map(p => `<div class="mnext"><span class="pk">Owns next</span>${esc(p.project)}: ${esc(p.next)}</div>`).join("")}
+  </article>`).join("")}</div>`;
 V.notes = () => `
   <div class="hero"><div><div class="eyebrow">${ic("note", 13, "#00e5ff", 2.4)}Library</div><h1>Notes</h1><p>A quick scratchpad. Saved automatically in this browser only, never uploaded.</p></div></div>
   <div class="glass notes"><textarea id="notes" placeholder="Ideas, call notes, things to remember…">${esc(store.get("notes", ""))}</textarea><div class="nf"><span id="nsaved">Saved on this device</span><span id="ncount"></span></div></div>`;
@@ -245,12 +265,13 @@ function render(animate = true) {
   const c = $("#content");
   c.innerHTML = `<div class="view"${animate ? "" : ' style="animation:none"'}>${view.section ? sectionView(view.section) : V[view.id]()}</div>`;
   if (!animate) $$(".card,.status li,.tilem,.ftable tbody tr", c).forEach(e => e.style.animation = "none");
+  $$(".chip[data-fp],.chip[data-mk],.chip[data-mp]", c).forEach(b => b.setAttribute("aria-pressed", b.classList.contains("on")));
   if (view.id === "files") { drawFiles(); $("#fq").addEventListener("input", e => { state.fq = e.target.value; drawFiles(); }); }
   if (view.id === "media") drawMedia();
   if (view.id === "notes") { const t = $("#notes"), cnt = () => $("#ncount").textContent = t.value.trim() ? t.value.trim().split(/\s+/).length + " words" : ""; cnt(); let to; t.addEventListener("input", () => { $("#nsaved").textContent = "Saving…"; clearTimeout(to); to = setTimeout(() => { store.set("notes", t.value); $("#nsaved").textContent = "Saved on this device"; }, 350); cnt(); }); }
   $("#crumb").textContent = view.section ? view.section.title : view.label;
   document.title = (view.id === "home" ? "Command Center" : (view.section ? view.section.title : view.label) + " · Command Center") + " · Ronnie";
-  $$("#nav a, #tabbar a").forEach(a => a.classList.toggle("on", a.dataset.v === view.id));
+  $$("#nav a, #tabbar a").forEach(a => { const on = a.dataset.v === view.id; a.classList.toggle("on", on); on ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"); });
   document.body.classList.remove("drawer");
   if (animate) window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
 }
@@ -268,11 +289,11 @@ function openCard(id) { const c = CARDS.find(x => x.id === id); if (!c) return; 
 function openFile(id) { const f = FILES.find(x => x.id === id); if (!f) return; if (f.private) return toast("Private item, not published", "lock"); addRecent("file", id); window.open(fileUrl(f), "_blank", "noopener"); }
 
 /* lightbox */
-let lbI = 0;
+let lbI = 0, lbFocus = null;
 function openLB(id) {
   const scope = current === "media" ? $$("#gal [data-lb]").map(b => b.dataset.lb) : null;
   lbList = (scope && scope.includes(id) ? scope : MEDIA.filter(m => m.kind === "image" && !m.private).map(m => m.id));
-  lbI = Math.max(0, lbList.indexOf(id)); showLB(); $("#lb").classList.add("open"); document.body.style.overflow = "hidden";
+  lbI = Math.max(0, lbList.indexOf(id)); lbFocus = document.activeElement; showLB(); $("#lb").classList.add("open"); document.body.style.overflow = "hidden"; $("#lb [data-act=lb-close]").focus();
 }
 function showLB() {
   const m = MEDIA.find(x => x.id === lbList[lbI]); if (!m) return; addRecent("media", m.id);
@@ -281,7 +302,7 @@ function showLB() {
   $("#lbT").textContent = m.title; $("#lbS").textContent = `${m.project} · ${m.type || "Image"} · ${m.w}×${m.h} · ${fmtSize(m.size)} · ${lbI + 1} of ${lbList.length}`;
   $("#lbDl").href = m.src; $("#lbOpen").href = m.src;
 }
-const closeLB = () => { $("#lb").classList.remove("open"); document.body.style.overflow = ""; if (current === "home") render(false); };
+const closeLB = () => { $("#lb").classList.remove("open"); document.body.style.overflow = ""; if (current === "home") render(false); else if (lbFocus && document.contains(lbFocus)) lbFocus.focus({ preventScroll: true }); };
 const stepLB = d => { lbI = (lbI + d + lbList.length) % lbList.length; showLB(); };
 
 /* palette */
@@ -289,6 +310,7 @@ let palItems = [], palSel = 0;
 function palIndex() {
   return [
     ...VIEWS.map(v => ({ g: "Go to", t: v.section ? v.section.title : v.label, s: "View", icon: v.icon, color: "#00e5ff", run: () => location.hash = "#/" + v.id })),
+    ...TEAM.map(m => ({ g: "Team", t: m.name, s: m.role + " · " + m.lanes.join(", "), icon: "users", color: m.color, run: () => { location.hash = "#/team"; setTimeout(() => { const el = document.getElementById("mate-" + slug(m.name)); if (el) { el.scrollIntoView({ block: "center" }); el.focus({ preventScroll: true }); el.classList.add("flash"); } }, 60); } })),
     ...CARDS.map(c => ({ g: "Cards", t: c.title, s: c.section.title + " · " + (c.sub || host(c.url)), icon: c.icon, color: c.color, k: c.tag, run: () => openCard(c.id) })),
     ...FILES.map(f => ({ g: "Files", t: f.name, s: f.project + " · " + f.type.toUpperCase() + (f.private ? " · Private" : ""), icon: f.private ? "lock" : "file", color: f.private ? "#fbbf24" : (TYPE_COLORS[f.type] || "#94a3b8"), run: () => f.private ? toast("Private item, not published", "lock") : openFile(f.id) })),
     ...MEDIA.map(m => ({ g: "Images & media", t: m.title, s: m.project + " · " + (m.type || m.kind) + (m.private ? " · Private" : ""), icon: m.private ? "lock" : m.kind === "image" ? "image" : m.kind === "video" ? "play" : "music", color: m.private ? "#fbbf24" : projColor(m.project), img: m.kind === "image" && !m.private ? m.thumb : null, run: () => m.private ? toast("Private item, not published", "lock") : m.kind === "image" ? openLB(m.id) : (state.mk = m.kind, location.hash = "#/media", render()) })),
@@ -303,16 +325,18 @@ function palRender() {
     list = [...rec, ...PAL.filter(p => p.g === "Go to"), ...favs.map(id => CARDS.find(c => c.id === id)).filter(Boolean).map(c => ({ ...PAL.find(p => p.g === "Cards" && p.t === c.title), g: "Favorites" }))];
   } else {
     list = PAL.map(p => { const h = (p.t + " " + p.s + " " + (p.k || "") + " " + p.g).toLowerCase(); if (!terms.every(t => h.includes(t))) return null; const tl = p.t.toLowerCase(); return { ...p, sc: (tl.startsWith(q) ? 0 : tl.includes(q) ? 1 : 2) }; }).filter(Boolean);
-    const order = ["Go to", "Cards", "Files", "Images & media"]; list.sort((a, b) => order.indexOf(a.g) - order.indexOf(b.g) || a.sc - b.sc); list = list.slice(0, 40);
+    const order = ["Go to", "Team", "Cards", "Files", "Images & media"]; list.sort((a, b) => order.indexOf(a.g) - order.indexOf(b.g) || a.sc - b.sc); list = list.slice(0, 40);
   }
   palItems = list; palSel = Math.min(palSel, Math.max(0, list.length - 1));
   let g = "", html = "";
-  list.forEach((p, i) => { if (p.g !== g) { g = p.g; html += `<div class="pal-g">${esc(g)}</div>`; } html += `<div class="pal-i${i === palSel ? " sel" : ""}" data-pi="${i}"><div class="mini" style="background:${hexA(p.color, .14)}">${p.img ? `<img src="${esc(p.img)}" alt="">` : ic(p.icon, 15, p.color)}</div><div style="min-width:0"><div class="pt">${esc(p.t)}</div><div class="ps">${esc(p.s)}</div></div><span class="go">${p.g === "Go to" ? "Go" : "Open"} ↵</span></div>`; });
+  list.forEach((p, i) => { if (p.g !== g) { g = p.g; html += `<div class="pal-g">${esc(g)}</div>`; } html += `<div class="pal-i${i === palSel ? " sel" : ""}" data-pi="${i}" id="pi-${i}" role="option" aria-selected="${i === palSel}"><div class="mini" style="background:${hexA(p.color, .14)}">${p.img ? `<img src="${esc(p.img)}" alt="">` : ic(p.icon, 15, p.color)}</div><div style="min-width:0"><div class="pt">${esc(p.t)}</div><div class="ps">${esc(p.s)}</div></div><span class="go">${p.g === "Go to" ? "Go" : "Open"} ↵</span></div>`; });
   $("#palList").innerHTML = html || `<div class="empty" style="margin:8px;border:0">${ic("note", 26, "#5f6a77", 1.6)}<div class="et">No results for "${esc(q)}"</div><div>Try a site, project or file type.</div></div>`;
   const sel = $(".pal-i.sel"); sel && sel.scrollIntoView({ block: "nearest" });
+  $("#palQ").setAttribute("aria-activedescendant", sel ? sel.id : "");
 }
-function openPal() { PAL = palIndex(); $("#pal").classList.add("open"); const i = $("#palQ"); i.value = ""; palSel = 0; palRender(); i.focus(); }
-const closePal = () => $("#pal").classList.remove("open");
+let lastFocus = null;
+function openPal() { lastFocus = document.activeElement; PAL = palIndex(); $("#pal").classList.add("open"); const i = $("#palQ"); i.value = ""; palSel = 0; palRender(); i.focus(); }
+const closePal = () => { $("#pal").classList.remove("open"); if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true }); };
 function runPal(i) { const p = palItems[i]; if (!p) return; closePal(); p.run(); }
 
 /* ---------- events ---------- */
@@ -325,18 +349,18 @@ document.addEventListener("click", e => {
   const lb = t.closest("[data-lb]"); if (lb) return openLB(lb.dataset.lb);
   const rc = t.closest("[data-rec]"); if (rc) { const [k, id] = rc.dataset.rec.split(":"); addRecent(k, id); }
   const go = t.closest("[data-go]"); if (go) { location.hash = "#/" + go.dataset.go; return; }
-  const fp = t.closest("[data-fp]"); if (fp) { state.fp = fp.dataset.fp; $$("#fchips .chip").forEach(c => c.classList.toggle("on", c === fp)); return drawFiles(); }
-  const mk = t.closest("[data-mk]"); if (mk) { state.mk = mk.dataset.mk; $$("[data-mk]").forEach(c => c.classList.toggle("on", c === mk)); return drawMedia(); }
-  const mp = t.closest("[data-mp]"); if (mp) { state.mp = mp.dataset.mp; $$("[data-mp]").forEach(c => c.classList.toggle("on", c === mp)); return drawMedia(); }
+  const fp = t.closest("[data-fp]"); if (fp) { state.fp = fp.dataset.fp; $$("#fchips .chip").forEach(c => { c.classList.toggle("on", c === fp); c.setAttribute("aria-pressed", c === fp); }); return drawFiles(); }
+  const mk = t.closest("[data-mk]"); if (mk) { state.mk = mk.dataset.mk; $$("[data-mk]").forEach(c => { c.classList.toggle("on", c === mk); c.setAttribute("aria-pressed", c === mk); }); return drawMedia(); }
+  const mp = t.closest("[data-mp]"); if (mp) { state.mp = mp.dataset.mp; $$("[data-mp]").forEach(c => { c.classList.toggle("on", c === mp); c.setAttribute("aria-pressed", c === mp); }); return drawMedia(); }
   const pi = t.closest("[data-pi]"); if (pi) return runPal(+pi.dataset.pi);
   const a = t.closest("[data-act]"); if (!a) return;
   const act = a.dataset.act;
   if (act === "pal-bg" && t !== a) return;
   ({
     palette: openPal, "pal-bg": closePal,
-    drawer: () => document.body.classList.add("drawer"), "drawer-close": () => document.body.classList.remove("drawer"),
-    collapse: () => { document.body.classList.toggle("collapsed"); store.set("collapsed", document.body.classList.contains("collapsed")); },
-    density: () => { const on = document.body.classList.toggle("compact"); store.set("compact", on); $("#densLbl").textContent = on ? "Comfortable view" : "Compact view"; toast(on ? "Compact view" : "Comfortable view", "menu"); },
+    drawer: () => { document.body.classList.add("drawer"); setTimeout(() => { const a = $("#nav a.on") || $("#nav a"); a && a.focus(); }, 50); }, "drawer-close": () => document.body.classList.remove("drawer"),
+    collapse: () => { const on = document.body.classList.toggle("collapsed"); store.set("collapsed", on); a.setAttribute("aria-expanded", !on); a.setAttribute("aria-label", on ? "Expand sidebar" : "Collapse sidebar"); },
+    density: () => { const on = document.body.classList.toggle("compact"); store.set("compact", on); $("#densLbl").textContent = on ? "Comfortable view" : "Compact view"; a.setAttribute("aria-pressed", on); toast(on ? "Compact view" : "Comfortable view", "menu"); },
     "lb-close": closeLB, "lb-prev": () => stepLB(-1), "lb-next": () => stepLB(1),
     "clear-recent": () => { recent = []; store.set("recent", []); render(false); },
     fclear: () => { state.fq = ""; state.fp = "All"; render(false); },
@@ -355,11 +379,12 @@ document.addEventListener("keydown", e => {
   if ($("#lb").classList.contains("open")) { if (e.key === "Escape") closeLB(); if (e.key === "ArrowRight") stepLB(1); if (e.key === "ArrowLeft") stepLB(-1); return; }
   if (e.key === "Escape") document.body.classList.remove("drawer");
   if (!typing && e.key === "/") { e.preventDefault(); openPal(); }
-  if (!typing && e.key === "Enter" && document.activeElement.dataset.openCard) openCard(document.activeElement.dataset.openCard);
+  const ae = document.activeElement;
+  if (!typing && (e.key === "Enter" || e.key === " ") && ae && ae.matches && ae.matches("[data-open-card],[data-open-file],.ritem[data-lb],.ritem[data-go]")) { e.preventDefault(); ae.click(); }
 });
 $("#palQ").addEventListener("input", () => { palSel = 0; palRender(); });
 $("#lb").addEventListener("click", e => { if (e.target.id === "lbStage") closeLB(); });
-window.addEventListener("hashchange", () => render());
+window.addEventListener("hashchange", () => { render(); $("#content").focus({ preventScroll: true }); });
 let tx = 0; document.addEventListener("touchstart", e => tx = e.touches[0].clientX, { passive: true });
 document.addEventListener("touchend", e => { if (!$("#lb").classList.contains("open")) return; const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 60) stepLB(dx < 0 ? 1 : -1); }, { passive: true });
 
