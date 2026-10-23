@@ -60,7 +60,7 @@ CC.sections = [
   ]},
   { id: "money", title: "Money", nav: "Money", icon: "wallet", project: null,
     desc: "Reporting, budget and books. Nothing financial is stored on this site.", links: [
-    { title: "Ronnie Finance", sub: "Private, not published", private: true, tag: "Private", icon: "lock", color: "#fbbf24" },
+    { title: "Ronnie Finance", sub: "Password locked (Taylor)", url: "https://ronnie-finance.ronniefunes92.workers.dev/", tag: "Private", icon: "lock", color: "#fbbf24" },
     { title: "YNAB", sub: "app.ynab.com", url: "https://app.ynab.com", tag: "Budget", icon: "wallet", color: "#3b82f6" },
     { title: "QuickBooks", sub: "qbo.intuit.com", url: "https://qbo.intuit.com", tag: "Books", icon: "book", color: "#10b981" },
     { title: "Cursor plan & usage", sub: "cursor.com/dashboard", url: "https://cursor.com/dashboard", tag: "Billing", icon: "gauge", color: "#a78bfa" },
