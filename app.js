@@ -99,12 +99,12 @@ async function copy(text) {
 
 /* ---------- renderers ---------- */
 const cardHTML = (c, i = 0) => `
-  <div class="card${isFav(c.id) ? " pinned-card" : ""}" style="--i:${i}" role="link" tabindex="0" data-open-card="${c.id}" title="${esc(c.url)}" aria-label="${esc(c.title)}, ${esc(c.sub || host(c.url))}, opens in a new tab">
+  <div class="card${isFav(c.id) ? " pinned-card" : ""}" style="--i:${i}" role="link" tabindex="0" data-open-card="${c.id}" title="${c.private ? "Private, not published" : esc(c.url)}" aria-label="${esc(c.title)}, ${esc(c.sub || host(c.url))}${c.private ? ", private, no link" : ", opens in a new tab"}">
     <div class="tile" style="background:${hexA(c.color, .14)};border:1px solid ${hexA(c.color, .3)}">${ic(c.icon, 20, c.color)}</div>
     <div class="body"><div class="ttl">${esc(c.title)}</div><div class="site">${esc(c.sub || host(c.url))}</div><span class="tag">${esc(c.tag)}</span></div>
     ${isFav(c.id) ? `<span class="star">${ic("star", 14, "#fbbf24", 2, "#fbbf24")}</span>` : ""}
     <div class="acts">
-      <button class="copy" data-copy="${esc(c.url)}" title="Copy link" aria-label="Copy link to ${esc(c.title)}">${ic("copy", 15)}</button>
+      ${c.private ? lockB() : `<button class="copy" data-copy="${esc(c.url)}" title="Copy link" aria-label="Copy link to ${esc(c.title)}">${ic("copy", 15)}</button>`}
       <button class="pin${isFav(c.id) ? " pinned" : ""}" data-fav="${c.id}" title="${isFav(c.id) ? "Unpin" : "Pin to Favorites"}" aria-label="${isFav(c.id) ? "Unpin" : "Pin"} ${esc(c.title)}" aria-pressed="${isFav(c.id)}">${ic("star", 15, "currentColor", 2, isFav(c.id) ? "currentColor" : "none")}</button>
     </div>
   </div>`;
@@ -285,7 +285,7 @@ function buildNav() {
 }
 
 /* ---------- open actions ---------- */
-function openCard(id) { const c = CARDS.find(x => x.id === id); if (!c) return; addRecent("card", id); window.open(c.url, "_blank", "noopener"); }
+function openCard(id) { const c = CARDS.find(x => x.id === id); if (!c) return; if (c.private || !c.url) return toast("Private item, not published", "lock"); addRecent("card", id); window.open(c.url, "_blank", "noopener"); }
 function openFile(id) { const f = FILES.find(x => x.id === id); if (!f) return; if (f.private) return toast("Private item, not published", "lock"); addRecent("file", id); window.open(fileUrl(f), "_blank", "noopener"); }
 
 /* lightbox */

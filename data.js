@@ -3,7 +3,7 @@
    Everything on the site comes from this file. Edit, commit, push.
    See README.md for copy-paste examples.
 
-   Card:   { title, url, tag, icon, color, sub? }
+   Card:   { title, url, tag, icon, color, sub?, private? }  (private card: no url, lock badge)
    File:   { name, type, project, path, size, added, private?, note? }
    Media:  { title, featured?, kind: "image"|"video"|"audio", project, src, thumb?, poster?, size, added, private?, note? }
    featured: true -> shows in the Home "From the library" strip
@@ -13,7 +13,7 @@
 var CC = window.CC = {};
 
 /* Cards pinned to Home on first visit (by title). Ronnie can pin/unpin with the star. */
-CC.defaultFavorites = ["Live website", "HighLevel dashboard", "Ronnie Finance", "Mount Up"];
+CC.defaultFavorites = ["Live website", "HighLevel dashboard", "Mount Up"];
 
 /* Projects used for tags and filters (name: color) */
 CC.projects = {
@@ -40,7 +40,6 @@ CC.sections = [
     desc: "Client: 24/7 electrician in Brooklyn & NYC.", links: [
     { title: "Site preview: Home", sub: "LeadConnector preview", url: "https://sites.leadconnectorhq.com/preview/c6BeH0e4UHRuZCT9VT3R", tag: "Client", icon: "bolt", color: "#a855f7" },
     { title: "Panel Upgrade page", sub: "LeadConnector preview", url: "https://sites.leadconnectorhq.com/preview/dq73xEaZ3LsMNrVpi2CG", tag: "Client", icon: "file", color: "#a855f7" },
-    { title: "Homepage mockup", sub: "GitHub Pages", url: "https://rfunes92.github.io/blaze-electric-preview/", tag: "Mockup", icon: "image", color: "#ec4899" },
     { title: "Google Business Profile", sub: "business.google.com", url: "https://business.google.com", tag: "Listing", icon: "pin", color: "#ef4444" },
     { title: "Blaze DNS", sub: "GoDaddy · blazeelectric.com", url: "https://dcc.godaddy.com/control/portfolio/blazeelectric.com/settings", tag: "DNS", icon: "server", color: "#14b8a6" },
   ]},
@@ -61,7 +60,7 @@ CC.sections = [
   ]},
   { id: "money", title: "Money", nav: "Money", icon: "wallet", project: null,
     desc: "Reporting, budget and books. Nothing financial is stored on this site.", links: [
-    { title: "Ronnie Finance", sub: "Financial reporting site", url: "https://rfunes92.github.io/ronnie-finance-site/", tag: "Finance", icon: "chart", color: "#22c55e" },
+    { title: "Ronnie Finance", sub: "Private, not published", private: true, tag: "Private", icon: "lock", color: "#fbbf24" },
     { title: "YNAB", sub: "app.ynab.com", url: "https://app.ynab.com", tag: "Budget", icon: "wallet", color: "#3b82f6" },
     { title: "QuickBooks", sub: "qbo.intuit.com", url: "https://qbo.intuit.com", tag: "Books", icon: "book", color: "#10b981" },
     { title: "Cursor plan & usage", sub: "cursor.com/dashboard", url: "https://cursor.com/dashboard", tag: "Billing", icon: "gauge", color: "#a78bfa" },
@@ -142,8 +141,9 @@ CC.projectBoard = [
 ];
 
 /* Home panels */
-CC.statusAsOf = "Oct 22, 2026";
+CC.statusAsOf = "Oct 23, 2026";
 CC.status = [
+  { state: "Pending", text: "Google Safe Browsing flag on rfunes92.github.io: cleanup done Oct 23 (private sites locked, Blaze mockup now on HighLevel only). Next: Search Console verify + request review" },
   { state: "Done",    text: "rokhalmarketing.com live on the new HighLevel site" },
   { state: "Done",    text: "Premium plan upgrade" },
   { state: "Ready",   text: "Outreach list of 12 local trades + email template" },
