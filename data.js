@@ -44,7 +44,9 @@ CC.sections = [
     { title: "Blaze DNS", sub: "GoDaddy · blazeelectric.com", url: "https://dcc.godaddy.com/control/portfolio/blazeelectric.com/settings", tag: "DNS", icon: "server", color: "#14b8a6" },
   ]},
   { id: "grace", title: "Grace Auto", nav: "Grace Auto", icon: "car", project: "Grace Auto",
-    desc: "Car sales: logo, Car Guy banners and reserved-sign templates. Assets live in the library below.", links: [] },
+    desc: "Car sales: logo, Car Guy banners and reserved-sign templates. Assets live in the library below.", links: [
+    { title: "Car Sales", sub: "Grace Auto sales board · /cars · view only", url: "cars/", tag: "Sales", icon: "car", color: "#3b82f6" },
+  ]},
   { id: "apps", title: "Apps", nav: "Apps", icon: "cube", project: "Apps",
     desc: "Apps we built.", links: [
     { title: "Mount Up", sub: "Private repo (Titan)", tag: "App", icon: "dumbbell", color: "#a3e635", private: true },
@@ -146,9 +148,10 @@ CC.projectBoard = [
 ];
 
 /* Home panels */
-CC.statusAsOf = "Oct 23, 2026";
+CC.statusAsOf = "Oct 24, 2026";
 CC.status = [
   { state: "Done",    text: "Command Center live on hub.rokhaldigital.com, organized into folders" },
+  { state: "Done",    text: "Car Sales board is live in the hub at /cars (Grace Auto, view only)" },
   { state: "Done",    text: "Edge Betting HQ lives in the hub at /betting (auto-syncs every 3 hours)" },
   { state: "Done",    text: "Rokhal Road Map moved into the hub at /roadmap" },
   { state: "Done",    text: "Ronnie Finance card opens the Cloudflare app (password locked)" },
