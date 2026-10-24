@@ -1,19 +1,330 @@
 {
-  "updated": "2026-10-24T18:51:30.800Z",
+  "updated": "2026-10-24T21:46:45.469Z",
   "items": [
+    {
+      "id": "espn-cfb-50270215",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Richmond rides another solid defensive outing to 13-6 sacking of Colgate",
+      "summary": "— Devin Geronomi had 11 solo tackles, Richmond recorded eight sacks, and the Spiders defeated Colgate 13-6 on Saturday.",
+      "event": "",
+      "fighters_or_teams": [
+        "Richmond Spiders",
+        "University of Richmond",
+        "Colgate Raiders",
+        "Colgate University"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "http://www.espn.com/ncf/recap?gameId=401868003",
+      "published": "2026-10-24T21:44:46Z"
+    },
+    {
+      "id": "espn-cfb-50270209",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Anderson accounts for 5 TDs, leads undefeated Tarleton State to 49-6 win over West Georgia",
+      "summary": "— Kaden Anderson threw four touchdown passes and ran for another to lead undefeated Tarleton State to a 49-6 victory over West Georgia on Saturday.",
+      "event": "",
+      "fighters_or_teams": [
+        "West Georgia Wolves",
+        "West Georgia College",
+        "Tarleton State Texans",
+        "Tarleton State University"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "http://www.espn.com/ncf/recap?gameId=401868238",
+      "published": "2026-10-24T21:43:47Z"
+    },
     {
       "id": "espn-ufc-50220522",
       "sport": "ufc",
       "type": "news",
-      "title": "UFC 333 live results, analysis for Volkanovski vs. Evloev, Yan vs. Dvalishvili",
-      "summary": "ESPN MMA contributors break down all the action from UFC 333 in Abu Dhabi.",
+      "title": "UFC 333 results: Volkanovski and Yan win to retain titles",
+      "summary": "Alexander Volkanovski and Petr Yan held on to their titles with big wins at the top of the UFC 333 fight card.",
       "event": "",
       "fighters_or_teams": [],
       "impact": "low",
       "edge_take": "",
       "source_name": "ESPN",
       "source_url": "https://www.espn.com/mma/story/_/id/50220522/ufc-333-results-volkanovski-evloev",
-      "published": "2026-10-24T18:47:19Z"
+      "published": "2026-10-24T21:40:47Z"
+    },
+    {
+      "id": "espn-cfb-50270159",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Mississippi State QB Kamario Taylor leaves game against Oklahoma",
+      "summary": "— Mississippi State quarterback Kamario Taylor’s attempt to come back from injury proved unsuccessful on Saturday.",
+      "event": "",
+      "fighters_or_teams": [
+        "Mississippi State Bulldogs",
+        "Mississippi State University",
+        "Oklahoma Sooners",
+        "University of Oklahoma"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "http://www.espn.com/ncf/recap?gameId=401856730",
+      "published": "2026-10-24T21:36:46Z"
+    },
+    {
+      "id": "espn-cfb-50269946",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Kevin Jennings breaks SMU's TD passing record in win over Cal",
+      "summary": "Kevin Jennings threw three touchdowns to break Tanner Mordecai's career record at SMU in the Mustangs' 59-20 win over Cal on Saturday.",
+      "event": "",
+      "fighters_or_teams": [
+        "SMU Mustangs",
+        "Southern Methodist University",
+        "California Golden Bears",
+        "University of California"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/college-football/story/_/id/50269946/kevin-jennings-breaks-smu-td-passing-record-win-cal",
+      "published": "2026-10-24T21:35:53Z"
+    },
+    {
+      "id": "espn-cfb-50269729",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Kiffin says LSU back to what he envisioned after Auburn win",
+      "summary": "LSU coach Lane Kiffin said his team's performance in a blowout win at Auburn was what the team was \"supposed to look like.\"",
+      "event": "",
+      "fighters_or_teams": [
+        "LSU Tigers",
+        "Louisiana State University"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/college-football/story/_/id/50269729/kiffin-says-lsu-back-envisioned-auburn-win",
+      "published": "2026-10-24T21:27:55Z"
+    },
+    {
+      "id": "espn-cfb-50269990",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Mason Mims throws 2 TD passes for ETSU in 38-0 win over VMI, which has lost 18 straight",
+      "summary": "— Mason Mims threw two touchdown passes, TJ Payton had 121 yards rushing and a TD on 15 carries, and East Tennessee State beat VMI 38-0 on Saturday, the Keydets' 18th consecutive loss.",
+      "event": "",
+      "fighters_or_teams": [
+        "VMI Keydets",
+        "Virginia Military Institute",
+        "East Tennessee State Buccaneers",
+        "East Tennessee State University"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "http://www.espn.com/ncf/recap?gameId=401868348",
+      "published": "2026-10-24T21:26:46Z"
+    },
+    {
+      "id": "espn-cfb-50269985",
+      "sport": "cfb",
+      "type": "news",
+      "title": "D'Shawntae Jones' late TD run lifts Miami (Ohio) to 28-27 win over Central Michigan",
+      "summary": "— D'Shawntae Jones' 2-yard touchdown run with 1:41 to go lifted Miami (Ohio) to a 28-27 win over Central Michigan on Saturday.",
+      "event": "",
+      "fighters_or_teams": [
+        "Central Michigan Chippewas",
+        "Central Michigan University",
+        "Miami (OH) RedHawks",
+        "Miami University"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "http://www.espn.com/ncf/recap?gameId=401866476",
+      "published": "2026-10-24T21:25:46Z"
+    },
+    {
+      "id": "espn-cfb-50269976",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Sixkiller throws for 450 yards, 3 TDs, as Campbell cruises past Maine 35-6",
+      "summary": "— Kamden Sixkiller threw for a career-high 450 yards and three touchdowns and Cambell overwhelmed Maine 35-6 on Saturday.",
+      "event": "",
+      "fighters_or_teams": [
+        "Maine Black Bears",
+        "University of Maine",
+        "Campbell Fighting Camels",
+        "Campbell University"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "http://www.espn.com/ncf/recap?gameId=401866671",
+      "published": "2026-10-24T21:23:46Z"
+    },
+    {
+      "id": "espn-nfl-50269752",
+      "sport": "nfl",
+      "type": "news",
+      "title": "Eagles' DeVonta Smith, Dontayvion Wicks out vs. Cowboys",
+      "summary": "The Eagles' top two receivers -- DeVonta Smith and Dontayvion Wicks -- have been ruled out of Monday night's game against the Cowboys.",
+      "event": "",
+      "fighters_or_teams": [
+        "DeVonta Smith",
+        "Dontayvion Wicks",
+        "Philadelphia Eagles"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/nfl/story/_/id/50269752/eagles-devonta-smith-dontayvion-wicks-vs-cowboys",
+      "published": "2026-10-24T21:17:02Z"
+    },
+    {
+      "id": "espn-ufc-50269828",
+      "sport": "ufc",
+      "type": "news",
+      "title": "Petr Yan completes trilogy with gritty win over Merab Dvalishvili to defend title",
+      "summary": "Petr Yan beat Merab Dvalishvili via unanimous decision in the co-main event of UFC 333, completing their trilogy with two straight victories.",
+      "event": "",
+      "fighters_or_teams": [
+        "Petr Yan",
+        "Merab Dvalishvili"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/mma/ufc/story/_/id/50269828/petr-yan-completes-trilogy-gritty-win-merab-dvalishvili-defend-title",
+      "published": "2026-10-24T21:11:56Z"
+    },
+    {
+      "id": "espn-cfb-50269731",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Isaiah Marshall accounts for 3 TDs, Kansas blocks late FG to beat Baylor for 1st Big 12 win 25-24",
+      "summary": "— Kansas rallied from a double-digit second-half deficit to defeat Baylor 25-24 and collect its first Big 12 win of the season on Saturday after blocking a field goal attempt in the final minute.",
+      "event": "",
+      "fighters_or_teams": [
+        "Kansas Jayhawks",
+        "University of Kansas",
+        "Baylor Bears",
+        "Baylor University"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "http://www.espn.com/ncf/recap?gameId=401856834",
+      "published": "2026-10-24T21:03:46Z"
+    },
+    {
+      "id": "espn-nfl-50269266",
+      "sport": "nfl",
+      "type": "news",
+      "title": "Packers activate RB Josh Jacobs for 2026 debut",
+      "summary": "Packers running back Josh Jacobs will make his 2026 season debut against the Lions after spending the first six weeks on the NFL's commissioner exempt list.",
+      "event": "",
+      "fighters_or_teams": [
+        "Josh Jacobs",
+        "Green Bay Packers",
+        "Detroit Lions",
+        "Coleman Owen"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/nfl/story/_/id/50269266/packers-activate-rb-josh-jacobs-2026-debut",
+      "published": "2026-10-24T21:01:12Z"
+    },
+    {
+      "id": "espn-cfb-50269659",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Dru DeShields throws 4 TDs passes, runs for another score; Kent State beats Akron 35-20",
+      "summary": "— Dru DeShields threw four touchdown passes and added a rushing touchdown, Wayne Harris had nine receptions for 156 yards and three TDs, and Kent State beat Akron 35-20 on Saturday.",
+      "event": "",
+      "fighters_or_teams": [
+        "Kent State Golden Flashes",
+        "Kent State University",
+        "Akron Zips",
+        "University of Akron"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "http://www.espn.com/ncf/recap?gameId=401866446",
+      "published": "2026-10-24T20:49:46Z"
+    },
+    {
+      "id": "espn-nfl-50269656",
+      "sport": "nfl",
+      "type": "news",
+      "title": "Vikings activate RB Jordan Mason off injured reserve",
+      "summary": "The Vikings activated running back Jordan Mason from injured reserve Saturday, completing his recovery from a fractured thumb that required surgery last month.",
+      "event": "",
+      "fighters_or_teams": [
+        "Jordan Mason",
+        "Minnesota Vikings",
+        "Aaron Jones Sr"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/nfl/story/_/id/50269656/vikings-activate-rb-jordan-mason-injured-reserve",
+      "published": "2026-10-24T20:49:35Z"
+    },
+    {
+      "id": "espn-nfl-50268816",
+      "sport": "nfl",
+      "type": "news",
+      "title": "Ravens rule out Lamar Jackson (ankle) vs. Bengals; Tyler 'Snoop' Huntley to start",
+      "summary": "The Baltimore Ravens have ruled QB Lamar Jackson out of Sundays game vs. the Cincinnati Bengals as he continues to deal with a high ankle sprain. Tyler \"Snoop\" Huntley will get the start.",
+      "event": "",
+      "fighters_or_teams": [
+        "Baltimore Ravens",
+        "Lamar Jackson",
+        "Tyler Huntley"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/nfl/story/_/id/50268816/ravens-rule-lamar-jackson-high-ankle-sprain-vs-bengals",
+      "published": "2026-10-24T20:41:27Z"
+    },
+    {
+      "id": "espn-cfb-50269493",
+      "sport": "cfb",
+      "type": "news",
+      "title": "9 touchdowns of at least 30 yards highlights FAU's 51-49 win over Rice",
+      "summary": "— Easton Messer piled up 262 all-purpose yards and scored five touchdowns and Florida Atlantic earned a 51-49 win over Rice, which had a four-TD day by quarterback Gael Ochoa in his first start on Saturday.",
+      "event": "",
+      "fighters_or_teams": [
+        "Florida Atlantic Owls",
+        "Florida Atlantic University",
+        "Rice Owls",
+        "Rice University"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "http://www.espn.com/ncf/recap?gameId=401862809",
+      "published": "2026-10-24T20:38:49Z"
+    },
+    {
+      "id": "espn-ufc-50267857",
+      "sport": "ufc",
+      "type": "news",
+      "title": "Lone'er Kavanagh shoots into flyweight title talk with devastating finish at UFC 333",
+      "summary": "England's Lone'er Kavanagh catapulted himself into flyweight title contention on Saturday with a devastating Round 1 finish of Ramazonbek Temirov in Abu Dhabi.",
+      "event": "",
+      "fighters_or_teams": [],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/ufc/story/_/id/50267857/loneer-kavanagh-shoots-flyweight-title-talk-devastating-finish-ufc-333",
+      "published": "2026-10-24T20:16:44Z"
     },
     {
       "id": "espn-cfb-50267995",
@@ -462,152 +773,6 @@
       "published": "2026-10-24T10:00:03Z"
     },
     {
-      "id": "espn-cfb-50263768",
-      "sport": "cfb",
-      "type": "news",
-      "title": "Davis Warren's 4 TD passes lead Stanford to a 31-28 win over NC State",
-      "summary": "— Davis Warren threw for 303 yards and four touchdowns to lead Stanford to a 31-28 victory over North Carolina State on Friday night.",
-      "event": "",
-      "fighters_or_teams": [
-        "Stanford Cardinal",
-        "Stanford University",
-        "NC State Wolfpack",
-        "North Carolina State University"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "http://www.espn.com/ncf/recap?gameId=401858272",
-      "published": "2026-10-24T07:09:46Z"
-    },
-    {
-      "id": "espn-cfb-50263520",
-      "sport": "cfb",
-      "type": "news",
-      "title": "Tyler Hughes throws 2 TD passes, runs for score in Wyoming's 28-14 victory over Air Force",
-      "summary": "— Tyler Hughes finished with two touchdown passes and a touchdown run to propel Wyoming to a 28-14 victory over the Air Force Academy on Friday night.",
-      "event": "",
-      "fighters_or_teams": [
-        "Wyoming Cowboys",
-        "University of Wyoming",
-        "Air Force Falcons",
-        "United States Air Force Academy"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "http://www.espn.com/ncf/recap?gameId=401864525",
-      "published": "2026-10-24T05:01:46Z"
-    },
-    {
-      "id": "espn-cfb-50263404",
-      "sport": "cfb",
-      "type": "news",
-      "title": "Dawson Jones' 50-yard FG on final play lifts Army over Tulsa 38-35",
-      "summary": "— Dawson Jones kicked a 50-yard field goal on the final play of the game and Army rallied last in a 38-35 victory over Tulsa on Friday night.",
-      "event": "",
-      "fighters_or_teams": [
-        "Tulsa Golden Hurricane",
-        "University of Tulsa",
-        "Army Black Knights",
-        "United States Military Academy"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "http://www.espn.com/ncf/recap?gameId=401862808",
-      "published": "2026-10-24T04:33:55Z"
-    },
-    {
-      "id": "espn-cfb-50262734",
-      "sport": "cfb",
-      "type": "news",
-      "title": "Duke uses trick-play TD pass from Nate Sheppard to pull out 19-16 victory over Virginia",
-      "summary": "— Duke running back Nate Sheppard threw a 28-yard touchdown pass to a wide-open Brody Keefe with 1:14 left to give the Blue Devils a 19-16 win over Virginia on Friday night at...",
-      "event": "",
-      "fighters_or_teams": [
-        "Virginia Cavaliers",
-        "University of Virginia",
-        "Duke Blue Devils",
-        "Duke University"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "http://www.espn.com/ncf/recap?gameId=401858271",
-      "published": "2026-10-24T03:41:46Z"
-    },
-    {
-      "id": "espn-cfb-50262755",
-      "sport": "cfb",
-      "type": "news",
-      "title": "Kalieb Osborne, Shamar Porter guide UConn to 35-16 victory over UMass",
-      "summary": "— Kalieb Osborne threw two touchdown passes and ran for a score to lead Connecticut to a 35-16 victory over Massachusetts on Friday night.",
-      "event": "",
-      "fighters_or_teams": [
-        "UConn Huskies",
-        "University of Connecticut",
-        "Massachusetts Minutemen",
-        "University of Massachusetts"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "http://www.espn.com/ncf/recap?gameId=401861965",
-      "published": "2026-10-24T02:51:52Z"
-    },
-    {
-      "id": "espn-nfl-50261735",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Lawrence McCutcheon, 5-time Pro Bowl RB for Rams, dies at 76",
-      "summary": "Lawrence McCutcheon, a five-time Pro Bowl running back for the Los Angeles Rams who went on to a long career in the team's front office, died Friday. He was 76.",
-      "event": "",
-      "fighters_or_teams": [
-        "Los Angeles Rams"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50261735/lawrence-mccutcheon-dies-76",
-      "published": "2026-10-24T02:03:23Z"
-    },
-    {
-      "id": "espn-nfl-50261267",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Dallas Cowboys cheerleaders unionize, will begin collective bargaining",
-      "summary": "The Dallas Cowboys have agreed to recognize the Dallas Cowboys Cheerleaders Association as the collective bargaining representative for the team's cheer squad.",
-      "event": "",
-      "fighters_or_teams": [
-        "Dallas Cowboys"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50261267/dallas-cowboys-cheerleaders-announce-unionizing",
-      "published": "2026-10-24T01:24:21Z"
-    },
-    {
-      "id": "espn-nfl-50260609",
-      "sport": "nfl",
-      "type": "news",
-      "title": "49ers WR Evans, DE Bosa, WR Samuel out vs. Atlanta; WR Kirk may return",
-      "summary": "49ers receivers Mike Evans and Deebo Samuel Sr., and defensive end Nick Bosa are among a half dozen players who have been ruled out for Sunday's game against the Falcons.",
-      "event": "",
-      "fighters_or_teams": [
-        "San Francisco 49ers",
-        "Mike Evans",
-        "Nick Bosa",
-        "Deebo Samuel Sr"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50260609/49ers-wr-evans-de-bosa-wr-samuel-vs-atlanta-wr-kirk-return",
-      "published": "2026-10-24T01:07:00Z"
-    },
-    {
       "id": "ufc333-line-yan-dvalishvili",
       "sport": "ufc",
       "type": "line-move",
@@ -678,167 +843,6 @@
       "source_name": "BestMMAStats",
       "source_url": "https://www.bestmmastats.com/line-movement",
       "published": "2026-10-23T21:00:00-04:00"
-    },
-    {
-      "id": "espn-nfl-50260535",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Cowboys say still time to turn things around after 2-4 start",
-      "summary": "Cowboys stars Dak Prescott and CeeDee Lamb express belief that there's still time for the team to turn things around despite a 2-4 start.",
-      "event": "",
-      "fighters_or_teams": [
-        "Dallas Cowboys",
-        "Dak Prescott",
-        "CeeDee Lamb"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50260535/cowboys-say-turn-things-2-4-start",
-      "published": "2026-10-24T00:10:08Z"
-    },
-    {
-      "id": "espn-nfl-50260899",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Giants LB Tremaine Edmunds (chest) out for year, source says",
-      "summary": "Giants linebacker Tremaine Edmunds will miss the rest of the season with a torn chest muscle, a source told ESPN's Jordan Raanan. Edmunds leads the team with 50 tackles and wears the green dot to make the calls on defense.",
-      "event": "",
-      "fighters_or_teams": [
-        "New York Giants",
-        "Tremaine Edmunds",
-        "Chauncey Golston",
-        "Micah McFadden"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50260899/giants-lb-tremaine-edmunds-chest-year-source-says",
-      "published": "2026-10-23T23:55:25Z"
-    },
-    {
-      "id": "espn-nfl-50261029",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Seahawks rule out RB Zach Charbonnet vs. Chiefs",
-      "summary": "RB Zach Charbonnet's season debut will have to wait at least one more week as the Seahawks have ruled him out for Sunday's game against the Chiefs.",
-      "event": "",
-      "fighters_or_teams": [
-        "Zach Charbonnet",
-        "Seattle Seahawks"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50261029/seahawks-rule-rb-zach-charbonnet-vs-chiefs",
-      "published": "2026-10-23T22:41:56Z"
-    },
-    {
-      "id": "espn-nfl-40699880",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Fantasy football buzz: Caleb Williams shows he is all the way back in TNF win",
-      "summary": "Caleb Williams did something no other Bears quarterback had done since 1962 as he led Chicago to a TNF win.",
-      "event": "",
-      "fighters_or_teams": [
-        "AJ Brown",
-        "Luther Burden III",
-        "D'Andre Swift",
-        "Marvin Harrison Jr"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/fantasy/football/story/_/id/40699880/fantasy-football-injuries-position-battles-nfl-news-analysis",
-      "published": "2026-10-23T21:38:40Z"
-    },
-    {
-      "id": "espn-nfl-50221073",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Bets for National Tight Ends Day: Props and picks for Sunday's games",
-      "summary": "In recognition of National Tight Ends Day, we thought we'd share our favorite bets for the versatile playmakers.",
-      "event": "",
-      "fighters_or_teams": [
-        "Dallas Goedert",
-        "George Kittle",
-        "AJ Barner",
-        "Tyler Higbee"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/espn/betting/story/_/id/50221073/nfl-week-7-odds-tight-ends-betting-props-preview",
-      "published": "2026-10-23T21:20:18Z"
-    },
-    {
-      "id": "espn-nfl-50259857",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Falcons' viral stripes will appear down center of helmets",
-      "summary": "A vertical stripe pattern that the Falcons used in a social media post will appear down the middle of the team's throwback helmets. The stripes drew significant online backlash as some saw similarity to Nazi Germany imagery.",
-      "event": "",
-      "fighters_or_teams": [
-        "Atlanta Falcons"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50259857/falcons-throwback-logo-include-viral-stripe-pattern",
-      "published": "2026-10-23T21:18:40Z"
-    },
-    {
-      "id": "espn-nfl-50259856",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Cam Skattebo set to return to Giants RB mix after being 'taught a lesson'",
-      "summary": "After zero carries in Week 6, Cam Skattebo says he took a step back to evaluate and correct, and Giants' coach says he should return to the running back mix vs. the Texans.",
-      "event": "",
-      "fighters_or_teams": [
-        "Cam Skattebo",
-        "New York Giants"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50259856/cam-skattebo-set-return-giants-rb-mix",
-      "published": "2026-10-23T21:13:54Z"
-    },
-    {
-      "id": "espn-nfl-50260001",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Ravens' Lamar Jackson (high ankle sprain) unsure if he'll play",
-      "summary": "Ravens quarterback Lamar Jackson said he's dealing with a high ankle sprain and is unsure if he'll play this week against the Bengals, but is \"heading in the right direction\" after missing the past two games.",
-      "event": "",
-      "fighters_or_teams": [
-        "Baltimore Ravens",
-        "Cincinnati Bengals",
-        "Lamar Jackson"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50260001/ravens-lamar-jackson-high-ankle-sprain-unsure-play",
-      "published": "2026-10-23T20:55:19Z"
-    },
-    {
-      "id": "espn-cfb-50259547",
-      "sport": "cfb",
-      "type": "news",
-      "title": "Oregon State standout WR Jesse Legree re-signs with Beavers for '27",
-      "summary": "Oregon State freshman receiver Jesse Legree, one of the country's breakout stars in 2026, has re-signed with the Beavers for next season, he announced Friday.",
-      "event": "",
-      "fighters_or_teams": [
-        "Oregon State Beavers",
-        "Oregon State University",
-        "Jesse Legree"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/college-football/story/_/id/50259547/oregon-state-standout-wr-jesse-legree-re-signs-beavers-27",
-      "published": "2026-10-23T20:50:14Z"
     },
     {
       "id": "nfl-w7-sf-kirk-return",
