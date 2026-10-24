@@ -150,7 +150,7 @@ CC.projectBoard = [
 /* Home panels */
 CC.statusAsOf = "Oct 24, 2026";
 CC.status = [
-  { state: "Done",    text: "Command Center live on hub.rokhaldigital.com, organized into folders" },
+  { state: "Done",    text: "The Brain live on hub.rokhaldigital.com, organized into folders" },
   { state: "Done",    text: "Car Sales board is live in the hub at /cars (Grace Auto, view only)" },
   { state: "Done",    text: "Edge Betting HQ lives in the hub at /betting (auto-syncs every 3 hours)" },
   { state: "Done",    text: "Rokhal Road Map moved into the hub at /roadmap" },

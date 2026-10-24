@@ -291,7 +291,7 @@ function render(animate = true) {
   if (view.id === "notes") { const t = $("#notes"), cnt = () => $("#ncount").textContent = t.value.trim() ? plural(t.value.trim().split(/\s+/).length, "word") : ""; cnt(); let to; t.addEventListener("input", () => { $("#nsaved").textContent = "Saving…"; clearTimeout(to); to = setTimeout(() => { store.set("notes", t.value); $("#nsaved").textContent = "Saved on this device"; }, 400); cnt(); }); }
   if (view.id === "home") { tickDeadlines(); requestAnimationFrame(() => setTimeout(() => $$(".arc", c).forEach(a => a.style.strokeDashoffset = a.dataset.off), 120)); }
   $("#crumb").textContent = view.section ? view.section.title : view.label;
-  document.title = (view.id === "home" ? "Command Center" : (view.section ? view.section.title : view.label) + " · Command Center") + " · Ronnie";
+  document.title = (view.id === "home" ? "The Brain" : (view.section ? view.section.title : view.label) + " · The Brain") + " · Ronnie";
   $$("#nav a, #tabbar a").forEach(a => { const on = a.dataset.v === view.id; a.classList.toggle("on", on); on ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"); });
   document.body.classList.remove("drawer");
   if (animate) window.scrollTo(0, 0);

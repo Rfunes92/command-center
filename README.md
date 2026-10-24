@@ -1,4 +1,4 @@
-# Ronnie's Command Center (v3)
+# The Brain (Ronnie's hub, v3; formerly Command Center)
 
 Live: https://hub.rokhaldigital.com (repo Rfunes92/command-center, branch main, CNAME). v3 = dark glass theme in Rokhal navy + amber, collapsible icon sidebar ( [ ), Ctrl/⌘ K palette with scopes (Tab), live deadline countdowns, Road to 3 ring, agent status cards and a Project library (#/library).
 

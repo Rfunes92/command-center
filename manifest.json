@@ -1,6 +1,6 @@
 {
-  "name": "Ronnie's Command Center",
-  "short_name": "Command",
+  "name": "The Brain",
+  "short_name": "The Brain",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
