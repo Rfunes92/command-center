@@ -1,6 +1,198 @@
 {
-  "updated": "2026-10-24T15:47:33.697Z",
+  "updated": "2026-10-24T18:51:30.800Z",
   "items": [
+    {
+      "id": "espn-ufc-50220522",
+      "sport": "ufc",
+      "type": "news",
+      "title": "UFC 333 live results, analysis for Volkanovski vs. Evloev, Yan vs. Dvalishvili",
+      "summary": "ESPN MMA contributors break down all the action from UFC 333 in Abu Dhabi.",
+      "event": "",
+      "fighters_or_teams": [],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/mma/story/_/id/50220522/ufc-333-results-volkanovski-evloev",
+      "published": "2026-10-24T18:47:19Z"
+    },
+    {
+      "id": "espn-cfb-50267995",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Alabama without Zabien Brown, EJ Crowell, Racin Delgatty vs. Texas A&M",
+      "summary": "Alabama will be without starting cornerback Zabien Brown, tailback EJ Crowell and center Racin Delgatty when it tries to end a two-game losing streak against Texas A&M.",
+      "event": "",
+      "fighters_or_teams": [
+        "Alabama Crimson Tide",
+        "University of Alabama",
+        "Zabien Brown",
+        "EJ Crowell"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/college-football/story/_/id/50267995/alabama-cb-brown-rb-crowell-c-delgatty-vs-texas-am",
+      "published": "2026-10-24T18:46:08Z"
+    },
+    {
+      "id": "espn-cfb-50265566",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Texas RB Hollywood Smothers ruled out vs. Ole Miss",
+      "summary": "Texas will be without top tailback Hollywood Smothers for Saturday's showdown vs. No. 7 Ole Miss as the No. 19 Longhorns try to avoid a third straight loss.",
+      "event": "",
+      "fighters_or_teams": [
+        "Hollywood Smothers",
+        "Texas Longhorns",
+        "University of Texas",
+        "Colin Simmons"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/college-football/story/_/id/50265566/texas-rb-hollywood-smothers-ruled-vs-ole-miss",
+      "published": "2026-10-24T18:33:13Z"
+    },
+    {
+      "id": "espn-cfb-50266668",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Kansas State QB Avery Johnson out vs. Arizona State",
+      "summary": "Kansas State quarterback Avery Johnson has been ruled out vs. Arizona State, with Jacob Knuth expected to make his first career start.",
+      "event": "",
+      "fighters_or_teams": [
+        "Avery Johnson",
+        "Jacob Knuth",
+        "Kansas State Wildcats",
+        "Kansas State University"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/college-football/story/_/id/50266668/sources-kansas-state-qb-avery-johnson-vs-arizona-st",
+      "published": "2026-10-24T18:33:00Z"
+    },
+    {
+      "id": "espn-cfb-50267749",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Rutgers QB Dylan Lonergan exits with apparent head injury",
+      "summary": "Rutgers QB Dylan Lonergan will not return to Saturday's game at Northwestern after suffering an apparent head injury on a big hit, coach Greg Schiano said.",
+      "event": "",
+      "fighters_or_teams": [
+        "Dylan Lonergan",
+        "Rutgers Scarlet Knights",
+        "Rutgers, The State University of N.J."
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/college-football/story/_/id/50267749/rutgers-qb-dylan-lonergan-exits-apparent-head-injury",
+      "published": "2026-10-24T18:30:38Z"
+    },
+    {
+      "id": "espn-cfb-50266897",
+      "sport": "cfb",
+      "type": "news",
+      "title": "CJ Carr watches brother Tommy's first Michigan start from Big House",
+      "summary": "Week 8 is Notre Dame's bye week, meaning Tommy Carr had a special spectator in attendance for his first start: his brother CJ.",
+      "event": "",
+      "fighters_or_teams": [
+        "Michigan Wolverines",
+        "University of Michigan",
+        "Tommy Carr",
+        "Notre Dame Fighting Irish"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/college-football/story/_/id/50266897/cj-carr-tommy-first-start-notre-dame-michigan",
+      "published": "2026-10-24T17:15:27Z"
+    },
+    {
+      "id": "espn-nfl-50240486",
+      "sport": "nfl",
+      "type": "news",
+      "title": "NFL Week 7 uniforms: Alternates galore as Texans go battle red, Lions all-black",
+      "summary": "Here's a look at what each NFL team is wearing in Week 7, led by alternate looks from Houston, Detroit and Dallas.",
+      "event": "",
+      "fighters_or_teams": [
+        "Arizona Cardinals",
+        "Atlanta Falcons",
+        "Baltimore Ravens",
+        "Buffalo Bills"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/nfl/story/_/id/50240486/nfl-week-7-uniforms",
+      "published": "2026-10-24T17:02:08Z"
+    },
+    {
+      "id": "espn-cfb-50258227",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Week 8 live: Best moments and top plays",
+      "summary": "Top moments and what we're seeing from around college football.",
+      "event": "",
+      "fighters_or_teams": [],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/college-football/story/_/id/50258227/week-8-live-highlights",
+      "published": "2026-10-24T16:46:53Z"
+    },
+    {
+      "id": "espn-cfb-50265857",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Indiana RB Khobie Martin returns, available vs. Michigan",
+      "summary": "Indiana running back Khobie Martin, who suffered a broken forearm in the Hoosiers' season opener, is available to play against Michigan.",
+      "event": "",
+      "fighters_or_teams": [
+        "Khobie Martin",
+        "Indiana Hoosiers",
+        "Indiana University"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/college-football/story/_/id/50265857/sources-indiana-rb-khobie-martin-return-vs-michigan",
+      "published": "2026-10-24T16:42:35Z"
+    },
+    {
+      "id": "espn-nfl-50228155",
+      "sport": "nfl",
+      "type": "news",
+      "title": "Fantasy playbook: NFL Week 7 Shadow Reports, lineup locks and projected scores",
+      "summary": "An all-encompassing look at the matchups to exploit or avoid and lineup locks in fantasy, as well as projected scores for all NFL games.",
+      "event": "",
+      "fighters_or_teams": [],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/fantasy/football/story/_/id/50228155/fantasy-playbook-projections-lineup-locks-week-7-shadow",
+      "published": "2026-10-24T15:54:31Z"
+    },
+    {
+      "id": "espn-cfb-50265129",
+      "sport": "cfb",
+      "type": "news",
+      "title": "Sources: Mississippi State eyes return for QB Taylor, RB Bothwell",
+      "summary": "Mississippi State QB Kamario Taylor and RB Fluff Bothwell are both available vs. Oklahoma following injury absences, sources told ESPN.",
+      "event": "",
+      "fighters_or_teams": [
+        "Kamario Taylor",
+        "Fluff Bothwell",
+        "Mississippi State Bulldogs",
+        "Mississippi State University"
+      ],
+      "impact": "low",
+      "edge_take": "",
+      "source_name": "ESPN",
+      "source_url": "https://www.espn.com/college-football/story/_/id/50265129/sources-mississippi-state-eyes-return-taylor-bothwell",
+      "published": "2026-10-24T15:48:46Z"
+    },
     {
       "id": "espn-nfl-49803708",
       "sport": "nfl",
@@ -146,57 +338,6 @@
       "published": "2026-10-24T15:32:18Z"
     },
     {
-      "id": "espn-cfb-50265857",
-      "sport": "cfb",
-      "type": "news",
-      "title": "Sources: Indiana RB Khobie Martin to return vs. Michigan",
-      "summary": "Indiana running back Khobie Martin, who suffered a broken forearm in the Hoosiers' season opener, is available and will play against Michigan, sources told ESPN.",
-      "event": "",
-      "fighters_or_teams": [
-        "Khobie Martin",
-        "Indiana Hoosiers",
-        "Indiana University"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/college-football/story/_/id/50265857/sources-indiana-rb-khobie-martin-return-vs-michigan",
-      "published": "2026-10-24T15:17:23Z"
-    },
-    {
-      "id": "espn-cfb-50265566",
-      "sport": "cfb",
-      "type": "news",
-      "title": "Texas RB Hollywood Smothers ruled out vs. Ole Miss",
-      "summary": "Texas will be without top tailback Hollywood Smothers for Saturday's showdown vs. No. 7 Ole Miss as the No. 19 Longhorns try to avoid a third straight loss.",
-      "event": "",
-      "fighters_or_teams": [
-        "Hollywood Smothers",
-        "Texas Longhorns",
-        "University of Texas",
-        "Colin Simmons"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/college-football/story/_/id/50265566/texas-rb-hollywood-smothers-ruled-vs-ole-miss",
-      "published": "2026-10-24T14:53:42Z"
-    },
-    {
-      "id": "espn-ufc-50220522",
-      "sport": "ufc",
-      "type": "news",
-      "title": "UFC 333 live results, analysis for Volkanovski vs. Evloev, Yan vs. Dvalishvili",
-      "summary": "ESPN MMA contributors break down all the action from UFC 333 in Abu Dhabi.",
-      "event": "",
-      "fighters_or_teams": [],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/mma/story/_/id/50220522/ufc-333-results-volkanovski-evloev",
-      "published": "2026-10-24T14:11:17Z"
-    },
-    {
       "id": "espn-cfb-50262750",
       "sport": "cfb",
       "type": "news",
@@ -212,25 +353,6 @@
       "source_name": "ESPN",
       "source_url": "https://www.espn.com/college-football/story/_/id/50262750/texas-ad-clarifies-use-ai-key-play-loss-florida",
       "published": "2026-10-24T13:53:48Z"
-    },
-    {
-      "id": "espn-cfb-50265129",
-      "sport": "cfb",
-      "type": "news",
-      "title": "Sources: Mississippi State eyes return for QB Taylor, RB Bothwell",
-      "summary": "Mississippi State QB Kamario Taylor is expected to attempt to play while RB Fluff Bothwell will be available vs. Oklahoma, sources told ESPN.",
-      "event": "",
-      "fighters_or_teams": [
-        "Kamario Taylor",
-        "Fluff Bothwell",
-        "Mississippi State Bulldogs",
-        "Mississippi State University"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/college-football/story/_/id/50265129/sources-mississippi-state-eyes-return-taylor-bothwell",
-      "published": "2026-10-24T12:27:36Z"
     },
     {
       "id": "espn-nfl-50264705",
@@ -558,20 +680,6 @@
       "published": "2026-10-23T21:00:00-04:00"
     },
     {
-      "id": "espn-nfl-50228155",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Fantasy playbook: NFL Week 7 Shadow Reports, lineup locks and projected scores",
-      "summary": "An all-encompassing look at the matchups to exploit or avoid and lineup locks in fantasy, as well as projected scores for all NFL games.",
-      "event": "",
-      "fighters_or_teams": [],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/fantasy/football/story/_/id/50228155/fantasy-playbook-projections-lineup-locks-week-7-shadow",
-      "published": "2026-10-24T00:11:30Z"
-    },
-    {
       "id": "espn-nfl-50260535",
       "sport": "nfl",
       "type": "news",
@@ -733,24 +841,6 @@
       "published": "2026-10-23T20:50:14Z"
     },
     {
-      "id": "espn-cfb-50260251",
-      "sport": "cfb",
-      "type": "news",
-      "title": "Michigan QB Tommy Carr, grandson of ex-coach, to get first start, source confirms",
-      "summary": "Michigan freshman quarterback Tommy Carr will make his first start Saturday against No. 6 Indiana, a source confirmed to ESPN.",
-      "event": "",
-      "fighters_or_teams": [
-        "Michigan Wolverines",
-        "University of Michigan",
-        "Tommy Carr"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/college-football/story/_/id/50260251/michigan-qb-tommy-carr-start-indiana-source-confirms",
-      "published": "2026-10-23T20:49:28Z"
-    },
-    {
       "id": "nfl-w7-sf-kirk-return",
       "sport": "nfl",
       "type": "lineup",
@@ -765,23 +855,6 @@
       "source_name": "ProFootballTalk",
       "source_url": "https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/mike-evans-nick-bosa-among-several-49ers-ruled-out-for-week-7",
       "published": "2026-10-23T16:45:00-04:00"
-    },
-    {
-      "id": "espn-nfl-50259989",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Bears TE Cole Kmet out for season after knee injury vs. Patriots",
-      "summary": "Bears tight end Cole Kmet will miss the remainder of the 2026 season after he suffered a serious right knee injury during Chicago's 30-24 win over New England.",
-      "event": "",
-      "fighters_or_teams": [
-        "Cole Kmet",
-        "Chicago Bears"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50259989/bears-te-cole-kmet-season-knee-injury-vs-pats",
-      "published": "2026-10-23T20:33:18Z"
     },
     {
       "id": "nfl-w7-sf-evans-bosa-out",
@@ -799,24 +872,6 @@
       "source_name": "NBC Sports Bay Area",
       "source_url": "https://www.nbcsportsbayarea.com/nfl/san-francisco-49ers/mike-evans-nick-bosa-out-injury-report/1973551/",
       "published": "2026-10-23T16:30:00-04:00"
-    },
-    {
-      "id": "espn-nfl-50259999",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Browns RBs Quinshon Judkins, Dylan Sampson expected to play",
-      "summary": "The Browns' top two running backs, Quinshon Judkins and Dylan Sampson, are expected to play against the Titans after being sidelined with injuries.",
-      "event": "",
-      "fighters_or_teams": [
-        "Quinshon Judkins",
-        "Dylan Sampson",
-        "Cleveland Browns"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50259999/browns-rbs-quinshon-judkins-dylan-sampson-expected-play",
-      "published": "2026-10-23T20:19:54Z"
     },
     {
       "id": "nfl-w7-kc-tackles-out",
@@ -851,61 +906,6 @@
       "source_name": "Seahawks.com",
       "source_url": "https://www.seahawks.com/news/2026-week-7-injury-report-chiefs-at-seahawks",
       "published": "2026-10-23T15:39:00-04:00"
-    },
-    {
-      "id": "espn-nfl-50259748",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Rams WR Puka Nacua misses practice, questionable vs. Raiders with calf injury",
-      "summary": "Rams wide receiver Puka Nacua (calf) will not practice Friday and is questionable to play Sunday against the Raiders, coach Sean McVay said.",
-      "event": "",
-      "fighters_or_teams": [
-        "Los Angeles Rams",
-        "Puka Nacua"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50259748/rams-wr-puka-nacua-questionable-vs-raiders-calf-injury",
-      "published": "2026-10-23T19:17:30Z"
-    },
-    {
-      "id": "espn-nfl-50259196",
-      "sport": "nfl",
-      "type": "news",
-      "title": "Baker Mayfield returns for Bucs, but WR Emeka Egbuka, RT Luke Goedeke out",
-      "summary": "Buccaneers quarterback Baker Mayfield will make his return following a three-game absence, but he will be without his top target in wide receiver Emeka Egbuka.",
-      "event": "",
-      "fighters_or_teams": [
-        "Tampa Bay Buccaneers",
-        "Emeka Egbuka",
-        "Baker Mayfield",
-        "Luke Goedeke"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/nfl/story/_/id/50259196/baker-mayfield-returns-emeka-egbuka-luke-goedeke-out",
-      "published": "2026-10-23T18:56:07Z"
-    },
-    {
-      "id": "espn-cfb-50216670",
-      "sport": "cfb",
-      "type": "news",
-      "title": "Top 25 betting lines: Texas favored vs. Ole Miss, Utah the fave vs. Houston",
-      "summary": "This week's odds and FPI predictions for Texas-Ole Miss, Utah-Houston and every top 25 matchup.",
-      "event": "",
-      "fighters_or_teams": [
-        "Ohio State Buckeyes",
-        "The Ohio State University",
-        "Georgia Bulldogs",
-        "University of Georgia"
-      ],
-      "impact": "low",
-      "edge_take": "",
-      "source_name": "ESPN",
-      "source_url": "https://www.espn.com/espn/betting/story/_/id/50216670/2026-college-football-week-8-top-25-betting-lines-odds",
-      "published": "2026-10-23T18:50:37Z"
     },
     {
       "id": "ufc333-wi-caliari-miss",
