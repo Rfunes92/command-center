@@ -162,3 +162,24 @@ CC.status = [
 ];
 CC.goal = { signed: 0, target: 3, deadline: "2026-11-15", prospects: 12 };
 CC.upNext = "Polish the Rokhal site page by page, then send the first outreach emails Friday morning.";
+
+/* ---------- v3 additions ---------- */
+/* Deadlines on Home. Countdown is computed live in the browser (America/New_York).
+   { title, date: "YYYY-MM-DD", time?: "HH:MM" (ET, default 09:00), approx?, project?, note? } */
+CC.deadlines = [
+  { title: "Blaze listing check",   date: "2026-10-26", project: "Blaze",  note: "Check the Google listing claim" },
+  { title: "GHL trial charge",      date: "2026-10-29", approx: true, project: "Rokhal", note: "HighLevel trial converts (about)" },
+  { title: "Founding rates end",    date: "2026-11-15", project: "Rokhal", note: "Last day for founding-client rates" },
+];
+
+/* Agent status cards (set by hand; not live). state: "active" | "standby" | "watching" */
+CC.agentStatusAsOf = "Oct 23, 2026";
+CC.agentStatus = {
+  "Becca":      { state: "active",   now: "Coordinating the team and the day's plan" },
+  "Grace":      { state: "active",   now: "Rokhal site polish · waiting on Blaze approval" },
+  "Serene":     { state: "standby",  now: "Torque Legion brand and social" },
+  "Titan":      { state: "standby",  now: "Mount Up improvements" },
+  "Taylor":     { state: "standby",  now: "On call" },
+  "Rokhal CFO": { state: "standby",  now: "On call" },
+  "Edge":       { state: "watching", now: "Football and UFC slates · /betting syncs every 3h", url: "betting/" },
+};

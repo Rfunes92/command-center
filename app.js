@@ -1,16 +1,15 @@
-/* Ronnie's Command Center v2 · app logic. Data lives in data.js. */
+/* Ronnie's Command Center v3 · app logic (vanilla, no build). Data lives in data.js. */
 (() => {
 "use strict";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-const hexA = (h, a) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
 const fmtSize = b => b == null ? "" : b < 1024 ? b + " B" : b < 1048576 ? (b / 1024).toFixed(b < 10240 ? 1 : 0) + " KB" : (b / 1048576).toFixed(1) + " MB";
 const fmtDate = d => new Date(d + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+const plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
 const TZ = "America/New_York";
-const REPO = "https://github.com/Rfunes92/command-center/blob/main/";
-const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
+const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 const store = {
   get(k, d) { try { const v = localStorage.getItem("cc." + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v) { try { localStorage.setItem("cc." + k, JSON.stringify(v)); } catch {} },
@@ -59,8 +58,16 @@ const P = {
   car:'<path d="M5 17h14v-5l-2-5H7l-2 5z"/><path d="M5 12h14"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/>',
   chev:'<path d="m6 9 6 6 6-6"/>',
   list:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  sparkle:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>',
+  timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  rows:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+  target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  bot:'<rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/>',
+  layers:'<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
 };
-const ic = (n, size = 18, color = "currentColor", sw = 2, fill = "none") => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="${color}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n] || P.link}</svg>`;
+const ic = (n, size = 18, color = "currentColor", sw = 2) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n] || P.link}</svg>`;
 
 /* ---------- model ---------- */
 const projColor = p => (CC.projects && CC.projects[p]) || "#8d98a5";
@@ -68,351 +75,365 @@ const CARDS = [];
 CC.sections.forEach(s => s.links.forEach(l => CARDS.push({ ...l, id: s.id + "/" + slug(l.title), section: s })));
 const FILES = CC.files.map((f, i) => ({ ...f, id: "f" + i + "-" + slug(f.name) }));
 const MEDIA = CC.media.map((m, i) => ({ ...m, id: "m" + i + "-" + slug(m.title) }));
-const host = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
+const TEAM = (CC.team || []).map(m => ({ ...m, ...((CC.agentStatus || {})[m.name] || { state: "standby", now: "" }) }));
+const DEADLINES = (CC.deadlines || []).map((d, i) => ({ ...d, id: "d" + i }));
+const isExt = u => /^https?:/i.test(u || "");
 const VIEWS = [
   { id: "home", label: "Home", icon: "home", group: "Overview" },
-  { id: "folders", label: "All folders", icon: "grid", group: "Overview", count: CC.sections.length },
-  { id: "team", label: "Team", icon: "users", group: "Overview", count: (CC.team || []).length },
-  ...CC.sections.map(s => ({ id: s.id, label: s.nav || s.title, icon: s.icon || "grid", group: "Folders", count: s.links.length, showZero: true, section: s })),
+  { id: "folders", label: "All apps", icon: "grid", group: "Overview", count: CARDS.length },
+  { id: "team", label: "Agents", icon: "bot", group: "Overview", count: TEAM.length },
+  ...CC.sections.map(s => ({ id: s.id, label: s.nav || s.title, icon: s.icon || "grid", group: "Folders", count: s.links.length, section: s })),
+  { id: "library", label: "Project library", icon: "layers", group: "Library", count: FILES.length + MEDIA.length },
   { id: "files", label: "Files", icon: "folder", group: "Library", count: FILES.length },
   { id: "media", label: "Images & Media", icon: "photo", group: "Library", count: MEDIA.length },
   { id: "notes", label: "Notes", icon: "note", group: "Library" },
 ];
 let favs = store.get("favs", null) || CC.defaultFavorites.map(t => (CARDS.find(c => c.title === t) || {}).id).filter(Boolean);
 let recent = store.get("recent", []);
+const state = { lp: "All", lk: "all", lq: "", layout: store.get("libLayout", "grid") };
+
+/* ---------- time (ET) ---------- */
+function etOffsetMin(ms) {
+  try {
+    const s = new Intl.DateTimeFormat("en-US", { timeZone: TZ, timeZoneName: "shortOffset" }).formatToParts(new Date(ms)).find(p => p.type === "timeZoneName").value;
+    const m = s.match(/GMT([+-]\d+)(?::(\d+))?/); if (m) return (+m[1]) * 60 + (m[2] ? Math.sign(+m[1]) * (+m[2]) : 0);
+  } catch {}
+  return -300;
+}
+function etToUtc(date, time = "00:00") { const [y, mo, d] = date.split("-").map(Number), [h, mi] = time.split(":").map(Number); const g = Date.UTC(y, mo - 1, d, h, mi); return g - etOffsetMin(g) * 60000; }
+function etParts(d = new Date()) { const o = {}; new Intl.DateTimeFormat("en-US", { timeZone: TZ, hour: "numeric", hour12: false, year: "numeric", month: "numeric", day: "numeric" }).formatToParts(d).forEach(p => o[p.type] = +p.value || p.value); return o; }
+const greeting = () => { const h = etParts().hour % 24; return h < 5 ? "Working late" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; };
+const daysTo = date => Math.max(0, Math.ceil((etToUtc(date) - Date.now()) / 864e5));
+
+/* ---------- helpers ---------- */
+const ptag = p => p ? `<span class="ptag" style="--c:${projColor(p)}"><span class="dot" style="background:${projColor(p)}"></span>${esc(p)}</span>` : "";
 const isFav = id => favs.includes(id);
-function toggleFav(id) {
-  favs = isFav(id) ? favs.filter(x => x !== id) : [...favs, id]; store.set("favs", favs);
-  toast(isFav(id) ? "Pinned to Favorites" : "Removed from Favorites", isFav(id) ? "star" : "check");
-  render(false); buildNav();
+function toggleFav(id) { favs = isFav(id) ? favs.filter(x => x !== id) : [...favs, id]; store.set("favs", favs); toast(isFav(id) ? "Pinned to Home" : "Unpinned", "star"); render(false); }
+function addRecent(kind, id) { recent = [{ k: kind, id, t: Date.now() }, ...recent.filter(r => !(r.k === kind && r.id === id))].slice(0, 8); store.set("recent", recent); }
+let tt; function toast(msg, icon = "check") { const t = $("#toast"); t.innerHTML = ic(icon, 16, "#F5A524") + esc(msg); t.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("show"), 1800); }
+async function copy(text) { try { await navigator.clipboard.writeText(text); toast("Link copied", "copy"); } catch { toast("Copy not allowed here", "x"); } }
+const absUrl = u => new URL(u, location.href).href;
+const fileUrl = f => f.path;
+
+/* ---------- components ---------- */
+function cardTile(c, i = 0) {
+  const priv = c.private || !c.url;
+  const ext = isExt(c.url);
+  const href = priv ? "" : ` href="${esc(c.url)}"${ext ? ' target="_blank" rel="noopener"' : ""}`;
+  const Tag = priv ? "div" : "a";
+  return `<${Tag} class="tile${priv ? " priv" : ""}" style="--c:${c.color || "#F5A524"};--i:${i}"${href} data-rec="card:${esc(c.id)}"${priv ? ' tabindex="0" data-priv="1"' : ""} aria-label="${esc(c.title)}${priv ? " (private)" : ""}">
+    <div class="th"><span class="ti">${ic(priv ? "lock" : c.icon, 20)}</span><div style="min-width:0;padding-right:18px"><div class="tt">${esc(c.title)}</div><div class="tsub">${esc(c.sub || "")}</div></div></div>
+    ${priv ? "" : `<span class="open">${ic(ext ? "ext" : "arrow", 16)}</span>`}
+    <div class="tf"><span class="tag">${esc(c.tag || "")}</span>${priv ? `<span class="tag lock">${ic("lock", 11)} Private</span>` : ""}
+      <span class="acts">${priv ? "" : `<button data-copy="${esc(absUrl(c.url))}" aria-label="Copy link to ${esc(c.title)}" title="Copy link">${ic("copy", 15)}</button>`}<button class="fav${isFav(c.id) ? " on" : ""}" data-fav="${esc(c.id)}" aria-pressed="${isFav(c.id)}" aria-label="${isFav(c.id) ? "Unpin" : "Pin"} ${esc(c.title)}" title="Pin to Home">${ic("star", 15)}</button></span></div>
+  </${Tag}>`;
 }
-function addRecent(kind, id) {
-  recent = [{ kind, id, t: Date.now() }, ...recent.filter(r => !(r.kind === kind && r.id === id))].slice(0, 8);
-  store.set("recent", recent);
+const folderTile = (s, i) => `<a class="tile ftile" href="#/${esc(s.id)}" style="--c:${projColor(s.project) !== "#8d98a5" ? projColor(s.project) : "#F5A524"};--i:${i}">
+  <div class="th"><span class="ti">${ic(s.icon || "grid", 20)}</span><div style="min-width:0"><div class="tt">${esc(s.title)}</div><div class="tsub">${esc(s.desc || "")}</div></div></div>
+  <div class="tf"><span class="tag">${plural(s.links.length, "app")}</span>${assetCount(s) ? `<span class="tag">${plural(assetCount(s), "asset")}</span>` : ""}</div><span class="open">${ic("arrow", 16)}</span></a>`;
+const assetCount = s => s.project ? FILES.filter(f => f.project === s.project).length + MEDIA.filter(m => m.project === s.project).length : 0;
+
+function libItem(x, i) {
+  const c = projColor(x.project);
+  if (x._k === "file") {
+    return `<div class="litem${x.private ? " priv" : ""}" style="--c:${c};--i:${i}" ${x.private ? 'data-priv="1"' : `data-open-file="${esc(x.id)}"`} tabindex="0" role="button" aria-label="${esc(x.name)}">
+      <div class="thumb"><span class="kind">File</span><span class="big">${x.private ? ic("lock", 30, "#fbbf24") : esc(x.type)}</span></div>
+      <div class="meta"><div class="nm">${esc(x.name)}</div><div class="sm">${ptag(x.project)}<span>${esc(fmtSize(x.size))}</span></div>${x.note ? `<div class="note">${esc(x.note)}</div>` : ""}</div></div>`;
+  }
+  const kindL = x.kind === "image" ? (x.type || "Image") : x.kind === "video" ? "Video" : "Audio";
+  let thumb;
+  if (x.private) thumb = `<div class="thumb"><span class="kind">${esc(kindL)}</span>${ic("lock", 30, "#fbbf24")}</div>`;
+  else if (x.kind === "image") thumb = `<div class="thumb${x.type === "Logo" || x.type === "Brand" ? " contain" : ""}"><span class="kind">${esc(kindL)}</span><img src="${esc(x.thumb || x.src)}" alt="${esc(x.title)}" loading="lazy" decoding="async"></div>`;
+  else if (x.kind === "video") thumb = `<div class="thumb" style="aspect-ratio:auto"><video controls preload="none" playsinline ${x.poster ? `poster="${esc(x.poster)}"` : ""} data-rec="media:${esc(x.id)}" src="${esc(x.src)}">${x.captions ? `<track kind="captions" srclang="en" label="English" src="${esc(x.captions)}">` : ""}</video></div>`;
+  else thumb = `<div class="thumb" style="aspect-ratio:16/10;display:flex;flex-direction:column;gap:10px;justify-content:center;align-items:center"><span class="kind">Audio</span>${ic("music", 30, c)}<audio controls preload="none" src="${esc(x.src)}" data-rec="media:${esc(x.id)}"></audio></div>`;
+  const clickable = !x.private && x.kind === "image";
+  return `<div class="litem${x.private ? " priv" : ""}" style="--c:${c};--i:${i}" ${x.private ? 'data-priv="1"' : clickable ? `data-lb="${esc(x.id)}" tabindex="0" role="button"` : ""} aria-label="${esc(x.title)}">${thumb}
+    <div class="meta"><div class="nm">${esc(x.title)}</div><div class="sm">${ptag(x.project)}<span>${esc(fmtSize(x.size))}</span></div>${x.note ? `<div class="note">${esc(x.note)}</div>` : ""}</div></div>`;
 }
-const fileUrl = f => f.private ? null : /\.(md|vtt)$/i.test(f.path) ? REPO + f.path : f.path;
-
-/* ---------- toast ---------- */
-let tt;
-function toast(msg, icon = "check") { const t = $("#toast"); t.innerHTML = ic(icon, 16, "#00e5ff") + esc(msg); t.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("show"), 1800); }
-async function copy(text) {
-  try { await navigator.clipboard.writeText(text); } catch { const a = document.createElement("textarea"); a.value = text; document.body.append(a); a.select(); document.execCommand("copy"); a.remove(); }
-  toast("Link copied");
+function libRows(list) {
+  return `<table class="ltable"><thead><tr><th>Name</th><th>Project</th><th class="hide-m">Type</th><th class="hide-m">Size</th><th class="hide-m">Added</th><th></th></tr></thead><tbody>${list.map(x => {
+    const name = x.name || x.title, type = x._k === "file" ? x.type : (x.type || x.kind);
+    const attr = x.private ? 'data-priv="1"' : x._k === "file" ? `data-open-file="${esc(x.id)}"` : x.kind === "image" ? `data-lb="${esc(x.id)}"` : `data-open-media="${esc(x.id)}"`;
+    return `<tr ${attr} tabindex="0"><td><div style="display:flex;align-items:center;gap:10px"><span class="ftype" style="--c:${projColor(x.project)}">${esc(String(type).slice(0, 4))}</span><div><div style="font-weight:600">${esc(name)}</div>${x.note ? `<div class="note">${esc(x.note)}</div>` : ""}</div></div></td><td>${ptag(x.project)}</td><td class="hide-m">${esc(type)}</td><td class="hide-m">${esc(fmtSize(x.size))}</td><td class="hide-m">${esc(fmtDate(x.added))}</td><td>${x.private ? `<span class="lock">${ic("lock", 15)}</span>` : ic(x._k === "file" ? "download" : "arrow", 15)}</td></tr>`;
+  }).join("")}</tbody></table>`;
+}
+function avatar(m) { return `<span class="av">${esc(m.initials)}<i class="sd"></i></span>`; }
+function agentCard(m, i, full) {
+  const owns = (CC.projectBoard || []).filter(p => p.owner === m.name);
+  const st = m.state || "standby";
+  return `<article class="glass agent st-${st}" id="agent-${slug(m.name)}" style="--c:${m.color};--i:${i}" tabindex="-1">
+    <div class="ah">${avatar(m)}<div style="min-width:0"><h3>${esc(m.name)}</h3><div class="ar">${esc(m.role)}</div></div><span class="st">${esc(st)}</span></div>
+    ${m.now ? `<div class="now"><b>Now</b>${esc(m.now)}</div>` : ""}
+    ${full ? `<div class="lanes">${m.lanes.map(l => `<span>${esc(l)}</span>`).join("")}</div>${owns.map(p => `<div class="now"><b>Owns next · ${esc(p.project)}</b>${esc(p.next)}</div>`).join("")}` : ""}
+    <div class="af">${m.projects.map(ptag).join("")}${m.url ? `<a class="linkbtn" style="margin-left:auto" href="${esc(m.url)}">Open app →</a>` : ""}</div>
+  </article>`;
+}
+function ringSVG(size, stroke, signed, target, id = "rg") {
+  const r = (size - stroke) / 2, C = 2 * Math.PI * r, frac = Math.min(1, signed / target);
+  // eslint-disable-next-line no-unused-vars
+  const _segs = Array.from({ length: target }, (_, k) => { const a = (k / target) * 360; return `<line x1="${size / 2}" y1="${size / 2 - r - stroke}" x2="${size / 2}" y2="${size / 2 - r + stroke}" class="seg" stroke-width="3" transform="rotate(${a} ${size / 2} ${size / 2})"/>`; }).join("");
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFC560"/><stop offset="1" stop-color="#F5A524"/></linearGradient></defs>
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" class="trk" stroke-width="${stroke}"/>
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" class="arc" stroke="url(#${id})" stroke-width="${stroke}" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-off="${C * (1 - frac)}"/></svg>`;
 }
 
-/* ---------- renderers ---------- */
-const cardHTML = (c, i = 0) => `
-  <div class="card${isFav(c.id) ? " pinned-card" : ""}" style="--i:${i}" role="link" tabindex="0" data-open-card="${c.id}" title="${c.private ? "Private, not published" : esc(c.url)}" aria-label="${esc(c.title)}, ${esc(c.sub || host(c.url))}${c.private ? ", private, no link" : ", opens in a new tab"}">
-    <div class="tile" style="background:${hexA(c.color, .14)};border:1px solid ${hexA(c.color, .3)}">${ic(c.icon, 20, c.color)}</div>
-    <div class="body"><div class="ttl">${esc(c.title)}</div><div class="site">${esc(c.sub || host(c.url))}</div><span class="tag">${esc(c.tag)}</span></div>
-    ${isFav(c.id) ? `<span class="star">${ic("star", 14, "#fbbf24", 2, "#fbbf24")}</span>` : ""}
-    <div class="acts">
-      ${c.private ? lockB() : `<button class="copy" data-copy="${esc(c.url)}" title="Copy link" aria-label="Copy link to ${esc(c.title)}">${ic("copy", 15)}</button>`}
-      <button class="pin${isFav(c.id) ? " pinned" : ""}" data-fav="${c.id}" title="${isFav(c.id) ? "Unpin" : "Pin to Favorites"}" aria-label="${isFav(c.id) ? "Unpin" : "Pin"} ${esc(c.title)}" aria-pressed="${isFav(c.id)}">${ic("star", 15, "currentColor", 2, isFav(c.id) ? "currentColor" : "none")}</button>
-    </div>
-  </div>`;
-
-const TYPE_COLORS = { pdf: "#ef4444", docx: "#3b82f6", md: "#94a3b8", csv: "#22c55e", vtt: "#a855f7", mp4: "#f59e0b", wav: "#f59e0b", mp3: "#f59e0b", png: "#14b8a6", jpg: "#14b8a6" };
-const ficon = t => { const c = TYPE_COLORS[t] || "#94a3b8"; return `<div class="ficon" style="background:${hexA(c, .13)};border:1px solid ${hexA(c, .3)};color:${c}">${esc(t.toUpperCase())}</div>`; };
-const ptag = p => p ? `<span class="ptag"><i style="background:${projColor(p)}"></i>${esc(p)}</span>` : "";
-const lockB = (t = "Private") => `<span class="lock">${ic("lock", 11, "currentColor", 2.4)}${t}</span>`;
-
-function fileRows(list) {
-  return list.map((f, i) => `
-    <tr class="${f.private ? "priv" : ""}" style="--i:${i}">
-      <td class="c-name"><div class="fname">${ficon(f.type)}<div style="min-width:0"><div class="n">${esc(f.name)}</div>${f.private ? `<div class="note">${esc(f.note || "Private, not published")}</div>` : `<div class="note">${esc(f.path.split("/").pop())}</div>`}</div></div></td>
-      <td class="c-proj">${ptag(f.project)}</td>
-      <td class="c-size num">${fmtSize(f.size)}</td>
-      <td class="c-date num">${fmtDate(f.added)}</td>
-      <td class="c-act"><div class="btns">${f.private ? lockB() : `
-        ${f.type !== "docx" ? `<a class="btn" href="${esc(fileUrl(f))}" target="_blank" rel="noopener" data-rec="file:${f.id}">${ic("ext", 14)}Open</a>` : ""}
-        <a class="btn primary" href="${esc(f.path)}" download data-rec="file:${f.id}">${ic("download", 14, "currentColor", 2.2)}<span class="lbl2">Download</span></a>`}</div></td>
-    </tr>`).join("");
+/* ---------- deadlines ---------- */
+function dlState(d) {
+  const start = etToUtc(d.date, d.time || "00:00"), end = start + 864e5, now = Date.now();
+  if (now >= end) return { past: true, ms: 0 };
+  if (now >= start) return { today: true, ms: 0 };
+  return { ms: start - now };
 }
-const fileTable = list => list.length ? `<div class="glass" style="overflow:hidden"><table class="ftable"><thead><tr><th>Name</th><th>Project</th><th>Size</th><th>Added</th><th style="text-align:right">Actions</th></tr></thead><tbody>${fileRows(list)}</tbody></table></div>` : emptyHTML("No files here yet", "Add one in data.js under CC.files.");
-
-const isLogoish = m => m.type === "Logo" || (m.w && m.w < 600 && m.h < 600);
-function mediaTile(m, i) {
-  if (m.private) return `<div class="tilem priv" style="--i:${i}"><div class="lockph">${ic("lock", 30, "#fbbf24", 1.8)}</div><div class="meta"><div style="min-width:0;flex:1"><div class="mt">${esc(m.title)}</div><div class="ms">${esc(m.note || "Private")}</div></div>${lockB()}</div></div>`;
-  let top = "";
-  if (m.kind === "image") top = `<button class="ph${isLogoish(m) ? " contain" : ""}" data-lb="${m.id}" aria-label="Preview ${esc(m.title)}"><img src="${esc(m.thumb || m.src)}" alt="${esc(m.title)}" loading="lazy" decoding="async" ${m.w && !isLogoish(m) ? `width="${m.w}" height="${Math.round(m.h > m.w * 1.6 ? m.w * .75 : m.h)}"` : ""}><span class="kind">${esc(m.type || "Image")}</span></button>`;
-  else if (m.kind === "video") top = `<video controls playsinline preload="none" aria-label="${esc(m.title)}" poster="${esc(m.poster || "")}" data-rec="media:${m.id}"><source src="${esc(m.src)}" type="video/mp4">${m.captions ? `<track kind="captions" src="${esc(m.captions)}" srclang="en" label="English">` : ""}</video>`;
-  else if (m.kind === "audio") top = `<div class="au"><div class="wave">${Array.from({ length: 34 }, (_, k) => `<i style="height:${18 + Math.round(Math.abs(Math.sin(k * 1.7) * Math.cos(k * .45)) * 82)}%"></i>`).join("")}</div><audio controls preload="none" aria-label="${esc(m.title)}" src="${esc(m.src)}" data-rec="media:${m.id}"></audio></div>`;
-  return `<div class="tilem" style="--i:${i}">${top}<div class="meta"><div style="min-width:0;flex:1"><div class="mt">${esc(m.title)}</div><div class="ms">${esc(m.project)} · ${m.kind === "image" ? esc(m.type || "Image") : m.kind === "video" ? "Video" : "Audio"} · ${fmtSize(m.size)}</div></div><a class="dl" href="${esc(m.src)}" download title="Download" aria-label="Download ${esc(m.title)}">${ic("download", 15)}</a></div></div>`;
+function dlHTML(d, i) {
+  const s = dlState(d), c = projColor(d.project) !== "#8d98a5" ? projColor(d.project) : "#F5A524";
+  return `<div class="glass dl" id="dl-${d.id}" data-dl="${d.id}" style="--c:${c};--i:${i}">
+    <div class="dh"><span class="di">${ic("timer", 18)}</span><div style="min-width:0"><div class="dt">${esc(d.title)}</div><div class="ds">${esc(d.note || "")}</div></div>
+    <div class="when"><div>${d.approx ? "~" : ""}${esc(new Date(d.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }))}</div><span class="pill" data-pill></span></div></div>
+    <div class="cd"><div><b data-u="d">--</b><span>days</span></div><div><b data-u="h">--</b><span>hrs</span></div><div><b data-u="m">--</b><span>min</span></div><div><b data-u="s">--</b><span>sec</span></div></div>
+    <div class="bar"><i data-bar style="width:0"></i></div></div>`;
 }
-const TEAM = CC.team || [];
-const member = n => TEAM.find(t => t.name === n);
-const lum = h => { const n = parseInt(h.slice(1), 16); return (.299 * (n >> 16) + .587 * ((n >> 8) & 255) + .114 * (n & 255)) / 255; };
-const avatar = (m, size = 40) => m ? `<span class="av" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .36)}px;color:${lum(m.color) > .6 ? "#061015" : "#fff"};background:linear-gradient(135deg,${hexA(m.color, .9)},${hexA(m.color, .45)});box-shadow:0 0 0 2px var(--bg),0 0 0 3px ${hexA(m.color, .5)}" aria-hidden="true">${esc(m.initials)}</span>` : "";
-const projHref = v => "#/" + v;
-const emptyHTML = (t, s) => `<div class="empty">${ic("folder", 30, "#5f6a77", 1.6)}<div class="et">${esc(t)}</div><div>${s}</div></div>`;
-
-function nyNow() {
-  const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", hourCycle: "h23" }).formatToParts(new Date()).map(x => [x.type, x.value]));
-  return { y: +p.year, m: +p.month, d: +p.day, h: +p.hour };
+function tickDeadlines() {
+  DEADLINES.forEach(d => {
+    const el = document.getElementById("dl-" + d.id); if (!el) return;
+    const s = dlState(d), t = Math.floor(s.ms / 1000);
+    const v = { d: Math.floor(t / 86400), h: Math.floor(t % 86400 / 3600), m: Math.floor(t % 3600 / 60), s: t % 60 };
+    $$("[data-u]", el).forEach(b => b.textContent = String(v[b.dataset.u]).padStart(2, "0"));
+    const pill = $("[data-pill]", el), days = s.ms / 864e5;
+    el.classList.toggle("past", !!s.past); el.classList.toggle("urgent", !!s.today || (!s.past && days < 3)); el.classList.toggle("soon", !s.past && days >= 3 && days < 10);
+    pill.className = "pill" + (s.today || days < 3 ? " r" : "");
+    pill.textContent = s.past ? "Passed" : s.today ? "Today" : days < 1 ? "Tomorrow" : "in " + Math.ceil(days) + "d";
+    $("[data-bar]", el).style.width = (s.past || s.today ? 100 : Math.max(3, 100 - days / 30 * 100)) + "%";
+  });
 }
-function daysLeft() { const n = nyNow(); const [y, m, d] = CC.goal.deadline.split("-").map(Number); return Math.max(0, Math.round((Date.UTC(y, m - 1, d) - Date.UTC(n.y, n.m - 1, n.d)) / 864e5)); }
-const greeting = () => { const h = nyNow().h; return h < 5 ? "Up late" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; };
 
-function resolveRecent(r) {
-  if (r.kind === "card") { const c = CARDS.find(x => x.id === r.id); return c && { t: c.title, s: c.section.title, color: c.color, icon: c.icon, attr: `data-open-card="${c.id}"` }; }
-  if (r.kind === "file") { const f = FILES.find(x => x.id === r.id); return f && { t: f.name, s: "File · " + f.project, color: TYPE_COLORS[f.type] || "#94a3b8", icon: "file", attr: `data-open-file="${f.id}"` }; }
-  if (r.kind === "media") { const m = MEDIA.find(x => x.id === r.id); return m && { t: m.title, s: (m.kind === "image" ? "Image" : m.kind === "video" ? "Video" : "Audio") + " · " + m.project, color: projColor(m.project), icon: m.kind === "image" ? "image" : m.kind === "video" ? "play" : "music", attr: m.kind === "image" ? `data-lb="${m.id}"` : `data-go="media"` }; }
-}
-const ago = t => { const s = (Date.now() - t) / 1000; return s < 60 ? "just now" : s < 3600 ? Math.floor(s / 60) + "m ago" : s < 86400 ? Math.floor(s / 3600) + "h ago" : Math.floor(s / 86400) + "d ago"; };
-
+/* ---------- views ---------- */
 const V = {};
 V.home = () => {
-  const dl = daysLeft(), g = CC.goal, pct = Math.min(1, g.signed / g.target), C = 2 * Math.PI * 48;
+  const g = CC.goal || { signed: 0, target: 3, deadline: "2026-11-15", prospects: 0 };
   const favCards = favs.map(id => CARDS.find(c => c.id === id)).filter(Boolean);
-  const rec = recent.map(r => ({ ...resolveRecent(r), t0: r.t })).filter(r => r.t);
-  const pub = MEDIA.filter(m => m.kind === "image" && !m.private), feat = pub.filter(m => m.featured);
-  const imgs = (feat.length ? feat : pub).slice(0, 6);
-  const now = new Date().toLocaleDateString("en-US", { timeZone: TZ, weekday: "long", month: "long", day: "numeric" });
-  return `
-  <div class="hero"><div><div class="eyebrow">${ic("clock", 13, "#00e5ff", 2.4)}${esc(now)}</div><h1>${greeting()}, <span class="hl">Ronnie</span></h1><p>${dl} days to ${fmtDate(g.deadline).replace(/, \d+$/, "")} · ${g.signed} of ${g.target} founding clients signed · ${g.prospects} prospects ready</p></div>
-    <div class="chips"><a class="chip" href="#/files">${ic("folder", 15)}Files</a><a class="chip" href="#/media">${ic("photo", 15)}Images</a><button class="chip" data-act="palette">${ic("arrow", 15)}Jump to…</button></div></div>
-  <div class="upnext"><div class="ic">${ic("arrow", 20, "currentColor", 2.6)}</div><div><div class="k">Up next</div><div class="v">${esc(CC.upNext)}</div></div></div>
-  <div class="sec-head"><h2>${ic("grid", 16, "#00e5ff")}Folders</h2><span class="sub">${plural(CC.sections.length, "folder")} · ${plural(CARDS.length, "card")}</span><span class="right"><a class="linkbtn" href="#/folders">See all cards →</a></span></div>
-  <div class="ftiles">${CC.sections.map((s, i) => `<a class="ftile" href="#/${esc(s.id)}" style="--i:${i}"><span class="fic">${ic(s.icon || "grid", 18, "#00e5ff")}</span><span style="min-width:0"><span class="fti">${esc(s.title)}</span><span class="fmeta">${esc(folderMeta(s))}</span></span></a>`).join("")}</div>
-  <div class="panels">
-    <div class="panel glass"><h3>${ic("list", 17, "#00e5ff")}Where things stand</h3><div class="meta">Status as of ${esc(CC.statusAsOf)}</div>
-      <ul class="status">${CC.status.map((s, i) => `<li style="--i:${i}"><span class="pill s-${esc(s.state)}">${esc(s.state)}</span><span>${esc(s.text)}</span></li>`).join("")}</ul></div>
-    <div class="panel glass"><h3>${ic("flag", 17, "#00e5ff")}Road to ${g.target} clients</h3><div class="meta">${dl ? `${dl} day${dl === 1 ? "" : "s"} to sign ${g.target - g.signed} more` : "Deadline reached"}</div>
-      <div class="goal">
-        <div class="ring"><svg width="112" height="112" viewBox="0 0 112 112"><circle cx="56" cy="56" r="48" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="10"/><circle cx="56" cy="56" r="48" fill="none" stroke="url(#rg)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - Math.max(pct, .015))}" style="filter:drop-shadow(0 0 6px rgba(0,229,255,.6))"/><defs><linearGradient id="rg"><stop offset="0" stop-color="#00b8cc"/><stop offset="1" stop-color="#00e5ff"/></linearGradient></defs></svg>
-          <div class="rv"><div><b>${g.signed}<span style="display:inline;font-size:16px;color:#5f6a77">/${g.target}</span></b><span>signed</span></div></div></div>
-        <div class="stats"><div class="stat hl"><span class="k">Days left</span><span class="v">${dl}</span></div><div class="stat"><span class="k">Prospects ready</span><span class="v">${g.prospects}</span></div><div class="stat"><span class="k">Deadline</span><span class="v">${fmtDate(g.deadline).replace(/, \d+$/, "")}</span></div></div>
-      </div>
-      <div class="bar" title="${g.signed} of ${g.target} signed"><i style="width:${pct * 100}%"></i></div>
-    </div>
-  </div>
-  ${(CC.projectBoard || []).length ? `<div class="sec-head"><h2>${ic("cube", 16, "#00e5ff")}Projects</h2><span class="sub">Next step and owner</span><span class="right"><a class="linkbtn" href="#/team">Meet the team →</a></span></div>
-  <div class="projects">${CC.projectBoard.map((p, i) => { const m = member(p.owner); return `<a class="proj" href="${projHref(p.view)}" style="--i:${i};--pc:${projColor(p.project)}" aria-label="${esc(p.project)}: next step ${esc(p.next)}. Owner ${esc(p.owner)}">
-    <div class="ph1"><span class="pdot"></span><span class="pn">${esc(p.project)}</span>${ic("ext", 14, "currentColor")}</div>
-    <div class="pnext"><span class="pk">Next</span>${esc(p.next)}</div>
-    <div class="pown">${avatar(m, 26)}<span>${esc(p.owner)}</span>${m ? `<span class="prole">${esc(m.role)}</span>` : ""}</div></a>`; }).join("")}</div>` : ""}
-  <div class="sec-head"><h2>${ic("star", 16, "#fbbf24", 2, "#fbbf24")}Favorites</h2><span class="sub">Tap the star on any card to pin or unpin</span></div>
-  ${favCards.length ? `<div class="grid">${favCards.map(cardHTML).join("")}</div>` : emptyHTML("No favorites yet", "Hover a card and tap the star to pin it here.")}
-  <div class="sec-head"><h2>${ic("clock", 16, "#00e5ff")}Recently opened</h2><span class="sub">On this device</span>${rec.length ? `<span class="right"><button class="linkbtn" data-act="clear-recent">Clear</button></span>` : ""}</div>
-  ${rec.length ? `<div class="recent">${rec.map(r => `<div class="ritem" ${r.attr} tabindex="0" role="link" aria-label="${esc(r.t)}, ${esc(r.s)}"><div class="mini" style="background:${hexA(r.color, .14)}">${ic(r.icon, 15, r.color)}</div><div style="min-width:0;flex:1"><div class="rt">${esc(r.t)}</div><div class="rs">${esc(r.s)} · ${ago(r.t0)}</div></div></div>`).join("")}</div>`
-    : `<div class="empty" style="padding:22px">Anything you open (cards, files, images) shows up here for one-tap access.</div>`}
-  <div class="sec-head"><h2>${ic("photo", 16, "#00e5ff")}From the library</h2><span class="sub">${MEDIA.filter(m => !m.private).length} images & clips, ${FILES.filter(f => !f.private).length} files</span><span class="right"><a class="linkbtn" href="#/media">Open Images & Media →</a></span></div>
-  <div class="strip">${imgs.map(m => `<button data-lb="${m.id}" aria-label="${esc(m.title)}"><img src="${esc(m.thumb)}" alt="${esc(m.title)}" loading="lazy" decoding="async"></button>`).join("")}</div>`;
+  const featured = MEDIA.filter(m => m.featured && !m.private).map(m => ({ ...m, _k: "media" }));
+  const rec = recent.map(r => r.k === "card" ? CARDS.find(c => c.id === r.id) : null).filter(Boolean).slice(0, 6);
+  const today = new Date().toLocaleDateString("en-US", { timeZone: TZ, weekday: "long", month: "long", day: "numeric" });
+  return `<div class="dash stagger">
+  <section class="glass welcome" style="--i:0">
+    <div class="eyebrow">${ic("sparkle", 13, "#F5A524", 2.4)}${esc(today)}</div>
+    <h1>${greeting()}, <em>Ronnie</em></h1>
+    <p class="lead">${daysTo(g.deadline)} days to ${esc(new Date(g.deadline + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }))} · ${g.signed} of ${g.target} founding clients signed · ${g.prospects} prospects ready</p>
+    ${CC.upNext ? `<div class="upnext"><span class="ui">${ic("arrow", 20, "#1a1205", 2.4)}</span><div><div class="uk">Up next</div><div class="ut">${esc(CC.upNext)}</div></div></div>` : ""}
+    <div class="quick"><a class="chip" href="betting/">${ic("trophy", 15)}Edge Betting HQ</a><a class="chip" href="roadmap/">${ic("map", 15)}Road Map</a><a class="chip" href="#/library">${ic("layers", 15)}Library</a><a class="chip" href="#/team">${ic("bot", 15)}Agents</a><button class="chip" data-act="palette">${ic("search", 15)}Search <kbd>${isMac ? "⌘K" : "Ctrl K"}</kbd></button></div>
+  </section>
+  <section class="glass ring-card" style="--i:1" aria-label="Road to 3 clients">
+    <div class="ring">${ringSVG(150, 14, g.signed, g.target)}<div class="rc"><div><div class="rn">${g.signed}<small>/${g.target}</small></div><div class="rl">signed</div></div></div></div>
+    <div class="ring-meta"><h3>Road to ${g.target} clients</h3><p>Founding-client push. Every signed client fills a slot.</p>
+      <div class="kv"><span>Days left</span><b>${daysTo(g.deadline)}</b><span>Prospects ready</span><b>${g.prospects}</b><span>Deadline</span><b>${esc(new Date(g.deadline + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }))}</b></div>
+      <div class="slots">${Array.from({ length: g.target }, (_, k) => `<span class="slot${k < g.signed ? " on" : ""}">${k + 1}</span>`).join("")}</div></div>
+  </section>
+  ${DEADLINES.length ? `<section class="deadlines" id="deadlines" style="--i:2" aria-label="Deadlines">${DEADLINES.map(dlHTML).join("")}</section>` : ""}
+  ${favCards.length ? `<section class="span-12" style="--i:3"><div class="ph-row"><h2>${ic("star", 16, "#F5A524")}Pinned</h2><span class="sub">Star any app to pin it here</span><span class="right"><a class="linkbtn" href="#/folders">All apps →</a></span></div><div class="tiles stagger">${favCards.map(cardTile).join("")}</div></section>` : ""}
+  <section class="span-12" style="--i:4"><div class="ph-row"><h2>${ic("grid", 16, "#F5A524")}Folders</h2><span class="sub">${plural(CC.sections.length, "folder")} · ${plural(CARDS.length, "app")}</span></div><div class="tiles stagger">${CC.sections.map(folderTile).join("")}</div></section>
+  <section class="span-8 agents-wrap" style="--i:5"><div class="ph-row"><h2>${ic("bot", 16, "#F5A524")}Agents</h2><span class="sub">Status as of ${esc(CC.agentStatusAsOf || "")}</span><span class="right"><a class="linkbtn" href="#/team">All agents →</a></span></div><div class="agents stagger">${TEAM.map((m, i) => agentCard(m, i, false)).join("")}</div></section>
+  <section class="span-4 status-wrap" style="--i:6"><div class="glass panel"><div class="ph-row"><h2>${ic("list", 16, "#F5A524")}Where things stand</h2><span class="sub">as of ${esc(CC.statusAsOf || "")}</span></div>
+    <ul class="status stagger">${(CC.status || []).map((s, i) => `<li style="--i:${i}"><span class="sb ${esc(s.state)}">${esc(s.state)}</span><span>${esc(s.text)}</span></li>`).join("")}</ul></div></section>
+  ${(CC.projectBoard || []).length ? `<section class="span-12" style="--i:7"><div class="glass panel"><div class="ph-row"><h2>${ic("cube", 16, "#F5A524")}Projects</h2><span class="sub">Next step and owner</span></div><div class="projects">${CC.projectBoard.map(p => `<a class="proj" href="#/${esc(p.view)}" style="--c:${projColor(p.project)}">${ptag(p.project)}<div class="pn">${esc(p.next)}</div><div class="po">Owner: ${esc(p.owner)}</div></a>`).join("")}</div></div></section>` : ""}
+  ${rec.length ? `<section class="span-12"><div class="ph-row"><h2>${ic("clock", 16, "#F5A524")}Recently opened</h2><span class="right"><button class="linkbtn" data-act="clear-recent">Clear</button></span></div><div class="tiles">${rec.map(cardTile).join("")}</div></section>` : ""}
+  ${featured.length ? `<section class="span-12 lib-wrap" style="--i:8"><div class="ph-row"><h2>${ic("photo", 16, "#F5A524")}From the library</h2><span class="sub">${MEDIA.filter(m => !m.private).length} images & clips · ${FILES.filter(f => !f.private).length} files</span><span class="right"><a class="linkbtn" href="#/library">Open library →</a></span></div><div class="ltiles stagger">${featured.map(libItem).join("")}</div></section>` : ""}
+  </div>`;
 };
-
-const assetsOf = s => s.project ? FILES.filter(f => f.project === s.project).length + MEDIA.filter(m => m.project === s.project).length : 0;
-const plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
-const folderMeta = s => plural(s.links.length, "card") + (assetsOf(s) ? " · " + plural(assetsOf(s), "asset") : "");
-const noCards = s => `<div class="empty" style="padding:20px">${assetsOf(s) ? `No link cards yet. ${esc(s.title)} assets are in the library: <a class="linkbtn" href="#/${esc(s.id)}">open folder →</a>` : "No link cards yet."}</div>`;
-let folderOpen = store.get("folderOpen", {});
-V.folders = () => `
-  <div class="hero"><div><div class="eyebrow">${ic("grid", 13, "#00e5ff", 2.4)}Overview</div><h1>All folders</h1><p>Every link in one place, grouped by folder. Tap a folder header to collapse or expand it.</p></div>
-    <div class="chips"><span class="chip" style="cursor:default">${plural(CC.sections.length, "folder")}</span><span class="chip" style="cursor:default">${plural(CARDS.length, "card")}</span><button class="chip" data-act="folders-all">Expand / collapse all</button></div></div>
-  ${CC.sections.map(s => `<details class="folder" data-folder="${esc(s.id)}"${folderOpen[s.id] === false ? "" : " open"}>
-    <summary><span class="fic">${ic(s.icon || "grid", 18, "#00e5ff")}</span><span class="fti">${esc(s.title)}</span><span class="badge">${s.links.length}</span><span class="fmeta">${esc(folderMeta(s))}</span><a class="linkbtn fopen" href="#/${esc(s.id)}">Open →</a><span class="chev">${ic("chev", 18)}</span></summary>
-    ${s.links.length ? `<div class="grid">${CARDS.filter(c => c.section === s).map(cardHTML).join("")}</div>` : noCards(s)}
-  </details>`).join("")}`;
-
+V.folders = () => `<div class="hero"><div><div class="eyebrow">${ic("grid", 13, "#F5A524", 2.4)}Overview</div><h1>All apps</h1><p>Every site, tool and app in one place. Star one to pin it to Home.</p></div></div>
+  ${CC.sections.map(s => `<section class="fgroup"><div class="ph-row"><h2><span class="ti" style="--c:${projColor(s.project) !== "#8d98a5" ? projColor(s.project) : "#F5A524"}">${ic(s.icon, 17)}</span>${esc(s.title)}</h2><span class="sub">${plural(s.links.length, "app")}</span><span class="right"><a class="linkbtn" href="#/${esc(s.id)}">Open folder →</a></span></div>
+  ${s.links.length ? `<div class="tiles stagger">${CARDS.filter(c => c.section === s).map(cardTile).join("")}</div>` : `<div class="glass empty">No app links yet. Assets are in the <a class="linkbtn" href="#/library?p=${encodeURIComponent(s.project || "")}">library</a>.</div>`}</section>`).join("")}`;
+V.team = () => `<div class="hero"><div><div class="eyebrow">${ic("bot", 13, "#F5A524", 2.4)}Overview</div><h1>Agents</h1><p>Your AI teammates, their lanes and what they are on. Status is set by hand (as of ${esc(CC.agentStatusAsOf || "")}); chats are not web links.</p></div></div>
+  <div class="agents stagger">${TEAM.map((m, i) => agentCard(m, i, true)).join("")}</div>`;
 function sectionView(s) {
   const cards = CARDS.filter(c => c.section === s);
-  const files = s.project ? FILES.filter(f => f.project === s.project) : [];
-  const media = s.project ? MEDIA.filter(m => m.project === s.project) : [];
-  return `
-  <div class="hero"><div><div class="eyebrow">${ic(s.icon || "grid", 13, "#00e5ff", 2.4)}Folder</div><h1>${esc(s.title)}</h1><p>${esc(s.desc || "")}</p></div>
-    <div class="chips"><span class="chip" style="cursor:default">${plural(cards.length, "card")}</span>${files.length ? `<a class="chip" href="#/files?p=${encodeURIComponent(s.project)}">${files.length} files</a>` : ""}${media.length ? `<a class="chip" href="#/media?p=${encodeURIComponent(s.project)}">${media.length} media</a>` : ""}</div></div>
-  ${cards.length ? `<div class="grid">${cards.map(cardHTML).join("")}</div>` : `<div class="empty" style="padding:20px">No link cards in this folder yet. Its files and images are below.</div>`}
-  ${files.length ? `<div class="sec-head"><h2>${ic("folder", 16, "#00e5ff")}Files</h2><span class="right"><a class="linkbtn" href="#/files?p=${encodeURIComponent(s.project)}">All ${esc(s.project)} files →</a></span></div>${fileTable(files.slice(0, 6))}` : ""}
-  ${media.length ? `<div class="sec-head"><h2>${ic("photo", 16, "#00e5ff")}Images & media</h2><span class="right"><a class="linkbtn" href="#/media?p=${encodeURIComponent(s.project)}">Open gallery →</a></span></div><div class="gallery">${media.slice(0, 8).map(mediaTile).join("")}</div>` : ""}`;
+  const assets = s.project ? [...FILES.filter(f => f.project === s.project).map(f => ({ ...f, _k: "file" })), ...MEDIA.filter(m => m.project === s.project).map(m => ({ ...m, _k: "media" }))] : [];
+  return `<div class="hero"><div><div class="eyebrow">${ic(s.icon, 13, "#F5A524", 2.4)}Folder</div><h1>${esc(s.title)}</h1><p>${esc(s.desc || "")}</p></div>
+    <div class="chips"><span class="chip">${plural(cards.length, "app")}</span>${assets.length ? `<a class="chip" href="#/library?p=${encodeURIComponent(s.project)}">${ic("layers", 14)}${plural(assets.length, "asset")}</a>` : ""}</div></div>
+  ${cards.length ? `<div class="tiles stagger">${cards.map(cardTile).join("")}</div>` : `<div class="glass empty">No app links yet.</div>`}
+  ${assets.length ? `<div class="ph-row" style="margin-top:28px"><h2>${ic("layers", 16, "#F5A524")}Library</h2><span class="sub">${esc(s.project)} files & media</span><span class="right"><a class="linkbtn" href="#/library?p=${encodeURIComponent(s.project)}">Open in library →</a></span></div><div class="ltiles stagger">${assets.slice(0, 12).map(libItem).join("")}</div>` : ""}`;
 }
-
-const state = { fp: "All", fq: "", mp: "All", mk: "All" };
-V.files = () => {
-  const projs = [...new Set(FILES.map(f => f.project))];
-  return `
-  <div class="hero"><div><div class="eyebrow">${ic("folder", 13, "#00e5ff", 2.4)}Library</div><h1>Files</h1><p>Templates, scripts and docs worth keeping. Private items are listed so you know they exist, but are never published.</p></div></div>
-  <div class="toolbar">
-    <label class="field">${ic("note", 15)}<input id="fq" placeholder="Filter files…" value="${esc(state.fq)}" autocomplete="off"></label>
-    <div class="chips" id="fchips">${["All", ...projs].map(p => `<button class="chip${state.fp === p ? " on" : ""}" data-fp="${esc(p)}">${p !== "All" ? `<span class="dot" style="background:${projColor(p)}"></span>` : ""}${esc(p)}<span class="n">${p === "All" ? FILES.length : FILES.filter(f => f.project === p).length}</span></button>`).join("")}</div>
-  </div>
-  <div id="ftab"></div>`;
+V.library = () => {
+  const projs = [...new Set([...FILES, ...MEDIA].map(x => x.project))];
+  const cnt = p => FILES.filter(f => p === "All" || f.project === p).length + MEDIA.filter(m => p === "All" || m.project === p).length;
+  const kinds = [["all", "All"], ["file", "Files"], ["media", "Media"], ["image", "Images"], ["video", "Video"], ["audio", "Audio"]];
+  return `<div class="hero"><div><div class="eyebrow">${ic("layers", 13, "#F5A524", 2.4)}Library</div><h1>Project library</h1><p>Files, logos, graphics and clips by project. Private items are listed so you know they exist, but nothing private is published.</p></div></div>
+  <div class="lib"><aside class="glass libside" aria-label="Projects"><div class="hd">Projects</div>${["All", ...projs].map(p => `<button data-lp="${esc(p)}" class="${state.lp === p ? "on" : ""}">${p === "All" ? ic("layers", 15) : `<span class="dot" style="background:${projColor(p)}"></span>`}${p === "All" ? "All projects" : esc(p)}<span class="n">${cnt(p)}</span></button>`).join("")}</aside>
+  <div><div class="toolbar"><label class="field">${ic("search", 15)}<input id="lq" placeholder="Filter the library…" value="${esc(state.lq)}" autocomplete="off" aria-label="Filter the library"></label>
+    <div class="seg" role="group" aria-label="Kind">${kinds.map(([k, l]) => `<button data-lk="${k}" class="${state.lk === k ? "on" : ""}">${l}</button>`).join("")}</div>
+    <div class="seg" role="group" aria-label="Layout"><button data-layout="grid" class="${state.layout === "grid" ? "on" : ""}" aria-label="Grid">${ic("grid", 15)}</button><button data-layout="list" class="${state.layout === "list" ? "on" : ""}" aria-label="List">${ic("rows", 15)}</button></div></div>
+  <div id="libOut"></div></div></div>`;
 };
-function drawFiles() {
-  const q = state.fq.trim().toLowerCase();
-  const list = FILES.filter(f => (state.fp === "All" || f.project === state.fp) && (!q || (f.name + " " + f.type + " " + f.project).toLowerCase().includes(q)));
+function drawLib() {
+  const q = state.lq.trim().toLowerCase();
+  let list = [...FILES.map(f => ({ ...f, _k: "file" })), ...MEDIA.map(m => ({ ...m, _k: "media" }))];
+  list = list.filter(x => (state.lp === "All" || x.project === state.lp) && (state.lk === "all" || (state.lk === "file" ? x._k === "file" : state.lk === "media" ? x._k === "media" : x.kind === state.lk)) && (!q || [x.name, x.title, x.type, x.kind, x.project].join(" ").toLowerCase().includes(q)));
   list.sort((a, b) => (a.private ? 1 : 0) - (b.private ? 1 : 0));
-  $("#ftab").innerHTML = list.length ? fileTable(list) : emptyHTML(`No files match "${state.fq}"`, `<button class="linkbtn" data-act="fclear">Clear filters</button>`);
+  $("#libOut").innerHTML = !list.length ? `<div class="glass empty">Nothing matches. <button class="linkbtn" data-act="lclear">Clear filters</button></div>` : state.layout === "list" ? libRows(list) : `<div class="ltiles stagger">${list.map(libItem).join("")}</div>`;
 }
-V.media = () => {
-  const projs = [...new Set(MEDIA.map(m => m.project))];
-  const kinds = [["All", "All"], ["image", "Images"], ["video", "Video"], ["audio", "Audio"]];
-  return `
-  <div class="hero"><div><div class="eyebrow">${ic("photo", 13, "#00e5ff", 2.4)}Library</div><h1>Images & Media</h1><p>Logos, brand graphics, mockups and clips. Tap an image to preview, videos and audio play right here.</p></div></div>
-  <div class="toolbar"><div class="chips">${kinds.map(([k, l]) => `<button class="chip${state.mk === k ? " on" : ""}" data-mk="${k}">${l}<span class="n">${k === "All" ? MEDIA.length : MEDIA.filter(m => m.kind === k).length}</span></button>`).join("")}</div>
-    <span style="width:1px;height:24px;background:var(--line2)"></span>
-    <div class="chips">${["All", ...projs].map(p => `<button class="chip${state.mp === p ? " on" : ""}" data-mp="${esc(p)}">${p !== "All" ? `<span class="dot" style="background:${projColor(p)}"></span>` : ""}${p === "All" ? "All projects" : esc(p)}</button>`).join("")}</div></div>
-  <div class="gallery" id="gal"></div>`;
-};
-let lbList = [];
-function drawMedia() {
-  const list = MEDIA.filter(m => (state.mk === "All" || m.kind === state.mk) && (state.mp === "All" || m.project === state.mp));
-  list.sort((a, b) => (a.private ? 1 : 0) - (b.private ? 1 : 0));
-  $("#gal").innerHTML = list.length ? list.map(mediaTile).join("") : "";
-  if (!list.length) $("#gal").outerHTML = `<div id="gal">${emptyHTML("Nothing here yet", "Try another filter.")}</div>`;
-}
-V.team = () => `
-  <div class="hero"><div><div class="eyebrow">${ic("users", 13, "#00e5ff", 2.4)}Overview</div><h1>Team</h1><p>Your AI teammates and their lanes. Message them in their own chats; there are no links here on purpose.</p></div></div>
-  <div class="team">${TEAM.map((m, i) => `<article class="mate" id="mate-${slug(m.name)}" style="--i:${i};--mc:${m.color}" tabindex="-1" aria-labelledby="mn-${slug(m.name)}">
-    <div class="mh">${avatar(m, 52)}<div style="min-width:0"><h3 id="mn-${slug(m.name)}">${esc(m.name)}</h3><div class="mrole">${esc(m.role)}</div></div></div>
-    <div class="mlab">Lanes</div><ul class="lanes">${m.lanes.map(l => `<li>${esc(l)}</li>`).join("")}</ul>
-    ${m.projects.length ? `<div class="mproj">${m.projects.map(ptag).join("")}</div>` : ""}
-    ${(CC.projectBoard || []).filter(p => p.owner === m.name).map(p => `<div class="mnext"><span class="pk">Owns next</span>${esc(p.project)}: ${esc(p.next)}</div>`).join("")}
-  </article>`).join("")}</div>`;
-V.notes = () => `
-  <div class="hero"><div><div class="eyebrow">${ic("note", 13, "#00e5ff", 2.4)}Library</div><h1>Notes</h1><p>A quick scratchpad. Saved automatically in this browser only, never uploaded.</p></div></div>
-  <div class="glass notes"><textarea id="notes" placeholder="Ideas, call notes, things to remember…">${esc(store.get("notes", ""))}</textarea><div class="nf"><span id="nsaved">Saved on this device</span><span id="ncount"></span></div></div>`;
+V.notes = () => `<div class="hero"><div><div class="eyebrow">${ic("note", 13, "#F5A524", 2.4)}Library</div><h1>Notes</h1><p>A quick scratchpad. Saved in this browser only, never uploaded.</p></div></div>
+  <div class="glass notes"><textarea id="notes" placeholder="Ideas, call notes, things to remember…" aria-label="Notes">${esc(store.get("notes", ""))}</textarea><div class="nf"><span id="nsaved">Saved on this device</span><span id="ncount"></span></div></div>`;
 
 /* ---------- router ---------- */
 let current = "home";
 function parseHash() { const h = location.hash.replace(/^#\/?/, ""); const [p, qs] = h.split("?"); return { id: p || "home", q: new URLSearchParams(qs || "") }; }
 function render(animate = true) {
-  const { id, q } = parseHash();
+  let { id, q } = parseHash();
+  if (id === "files") state.lk = "file";
+  if (id === "media") state.lk = "media";
+  if (q.get("p")) state.lp = q.get("p");
   const view = VIEWS.find(v => v.id === id) || VIEWS[0];
   current = view.id;
-  if (q.get("p")) { if (view.id === "files") state.fp = q.get("p"); if (view.id === "media") state.mp = q.get("p"); }
+  const libLike = ["library", "files", "media"].includes(view.id);
   const c = $("#content");
-  c.innerHTML = `<div class="view"${animate ? "" : ' style="animation:none"'}>${view.section ? sectionView(view.section) : V[view.id]()}</div>`;
-  if (!animate) $$(".card,.status li,.tilem,.ftable tbody tr", c).forEach(e => e.style.animation = "none");
-  $$(".chip[data-fp],.chip[data-mk],.chip[data-mp]", c).forEach(b => b.setAttribute("aria-pressed", b.classList.contains("on")));
-  if (view.id === "files") { drawFiles(); $("#fq").addEventListener("input", e => { state.fq = e.target.value; drawFiles(); }); }
-  if (view.id === "media") drawMedia();
-  if (view.id === "notes") { const t = $("#notes"), cnt = () => $("#ncount").textContent = t.value.trim() ? t.value.trim().split(/\s+/).length + " words" : ""; cnt(); let to; t.addEventListener("input", () => { $("#nsaved").textContent = "Saving…"; clearTimeout(to); to = setTimeout(() => { store.set("notes", t.value); $("#nsaved").textContent = "Saved on this device"; }, 350); cnt(); }); }
+  c.innerHTML = `<div class="view"${animate ? "" : ' style="animation:none"'}>${view.section ? sectionView(view.section) : libLike ? V.library() : V[view.id]()}</div>`;
+  if (!animate) $$(".stagger>*", c).forEach(e => e.style.animation = "none");
+  if (libLike) { drawLib(); $("#lq").addEventListener("input", e => { state.lq = e.target.value; drawLib(); }); }
+  if (view.id === "notes") { const t = $("#notes"), cnt = () => $("#ncount").textContent = t.value.trim() ? plural(t.value.trim().split(/\s+/).length, "word") : ""; cnt(); let to; t.addEventListener("input", () => { $("#nsaved").textContent = "Saving…"; clearTimeout(to); to = setTimeout(() => { store.set("notes", t.value); $("#nsaved").textContent = "Saved on this device"; }, 400); cnt(); }); }
+  if (view.id === "home") { tickDeadlines(); requestAnimationFrame(() => setTimeout(() => $$(".arc", c).forEach(a => a.style.strokeDashoffset = a.dataset.off), 120)); }
   $("#crumb").textContent = view.section ? view.section.title : view.label;
   document.title = (view.id === "home" ? "Command Center" : (view.section ? view.section.title : view.label) + " · Command Center") + " · Ronnie";
   $$("#nav a, #tabbar a").forEach(a => { const on = a.dataset.v === view.id; a.classList.toggle("on", on); on ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"); });
   document.body.classList.remove("drawer");
-  if (animate) window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  if (animate) window.scrollTo(0, 0);
+  bindTilt();
 }
 function buildNav() {
   let html = "", g = "";
-  VIEWS.forEach(v => { if (v.group !== g) { g = v.group; html += `<div class="navlabel">${g}</div>`; } html += `<a href="#/${v.id}" data-v="${v.id}" title="${esc(v.label)}">${ic(v.icon, 18)}<span class="lbl">${esc(v.label)}</span>${v.count || v.showZero ? `<span class="badge">${v.count}</span>` : ""}</a>`; });
+  VIEWS.forEach(v => { if (v.group !== g) { g = v.group; html += `<div class="navlabel">${g}</div>`; } html += `<a href="#/${v.id}" data-v="${v.id}" data-label="${esc(v.label)}" aria-label="${esc(v.label)}">${ic(v.icon, 19)}<span class="lbl">${esc(v.label)}</span>${v.count != null ? `<span class="badge">${v.count}</span>` : ""}</a>`; });
   $("#nav").innerHTML = html;
-  const tabs = [["home", "Home", "home"], ["folders", "Folders", "grid"], ["files", "Files", "folder"], ["media", "Media", "photo"]];
-  $("#tabbar").innerHTML = tabs.map(([v, l, i]) => `<a href="#/${v}" data-v="${v}">${ic(i, 21)}<span>${l}</span></a>`).join("") + `<button data-act="drawer">${ic("menu", 21)}<span>More</span></button>`;
-  $$("#nav a, #tabbar a").forEach(a => a.classList.toggle("on", a.dataset.v === current));
+  const tabs = [["home", "Home", "home"], ["folders", "Apps", "grid"], ["library", "Library", "layers"], ["team", "Agents", "bot"]];
+  $("#tabbar").innerHTML = tabs.map(([v, l, i]) => `<a href="#/${v}" data-v="${v}">${ic(i, 21)}<span>${l}</span></a>`).join("") + `<button data-act="palette" aria-label="Search">${ic("search", 21)}<span>Search</span></button><button data-act="drawer" aria-label="More">${ic("menu", 21)}<span>More</span></button>`;
+  const g2 = CC.goal || { signed: 0, target: 3 };
+  $("#miniRing").innerHTML = `<span style="width:34px;height:34px;display:block">${ringSVG(34, 5, g2.signed, g2.target, "rg2")}</span><span class="mt"><b>${g2.signed}/${g2.target} clients</b>${daysTo(g2.deadline)} days left</span>`;
+  $("#miniRing").onclick = () => { location.hash = "#/home"; };
+  setTimeout(() => $$("#miniRing .arc").forEach(a => a.style.strokeDashoffset = a.dataset.off), 300);
 }
 
-/* ---------- open actions ---------- */
-function openCard(id) { const c = CARDS.find(x => x.id === id); if (!c) return; if (c.private || !c.url) return toast("Private item, not published", "lock"); addRecent("card", id); window.open(c.url, "_blank", "noopener"); }
+/* ---------- tile hover glow / tilt ---------- */
+const fine = matchMedia("(pointer:fine)").matches && !matchMedia("(prefers-reduced-motion:reduce)").matches;
+function bindTilt() {
+  if (!fine) return;
+  $$(".tile").forEach(t => {
+    if (t._tilt) return; t._tilt = 1;
+    t.addEventListener("pointermove", e => { const r = t.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height; t.style.setProperty("--mx", x * 100 + "%"); t.style.setProperty("--my", y * 100 + "%"); t.style.setProperty("--rx", (0.5 - y) * 6 + "deg"); t.style.setProperty("--ry", (x - 0.5) * 6 + "deg"); });
+    t.addEventListener("pointerleave", () => { t.style.setProperty("--rx", "0deg"); t.style.setProperty("--ry", "0deg"); });
+  });
+}
+
+/* ---------- open ---------- */
 function openFile(id) { const f = FILES.find(x => x.id === id); if (!f) return; if (f.private) return toast("Private item, not published", "lock"); addRecent("file", id); window.open(fileUrl(f), "_blank", "noopener"); }
-
-/* lightbox */
-let lbI = 0, lbFocus = null;
-function openLB(id) {
-  const scope = current === "media" ? $$("#gal [data-lb]").map(b => b.dataset.lb) : null;
-  lbList = (scope && scope.includes(id) ? scope : MEDIA.filter(m => m.kind === "image" && !m.private).map(m => m.id));
-  lbI = Math.max(0, lbList.indexOf(id)); lbFocus = document.activeElement; showLB(); $("#lb").classList.add("open"); document.body.style.overflow = "hidden"; $("#lb [data-act=lb-close]").focus();
-}
-function showLB() {
-  const m = MEDIA.find(x => x.id === lbList[lbI]); if (!m) return; addRecent("media", m.id);
-  const img = $("#lbImg"); img.src = m.src; img.alt = m.title;
-  $("#lbStage").classList.toggle("tall", m.h > m.w * 1.6); $("#lbStage").scrollTop = 0;
-  $("#lbT").textContent = m.title; $("#lbS").textContent = `${m.project} · ${m.type || "Image"} · ${m.w}×${m.h} · ${fmtSize(m.size)} · ${lbI + 1} of ${lbList.length}`;
-  $("#lbDl").href = m.src; $("#lbOpen").href = m.src;
-}
-const closeLB = () => { $("#lb").classList.remove("open"); document.body.style.overflow = ""; if (current === "home") render(false); else if (lbFocus && document.contains(lbFocus)) lbFocus.focus({ preventScroll: true }); };
+let lbList = [], lbI = 0, lastFocus;
+function openLB(id) { lbList = MEDIA.filter(m => m.kind === "image" && !m.private); lbI = Math.max(0, lbList.findIndex(m => m.id === id)); addRecent("media", id); lastFocus = document.activeElement; showLB(); $("#lb").classList.add("open"); $("#lb [data-act=lb-close]").focus(); }
+function showLB() { const m = lbList[lbI]; if (!m) return; $("#lbImg").src = m.src; $("#lbImg").alt = m.title; $("#lbT").textContent = m.title; $("#lbS").textContent = [m.project, m.type, m.w && m.h ? m.w + "×" + m.h : "", fmtSize(m.size)].filter(Boolean).join(" · "); $("#lbOpen").href = m.src; $("#lbDl").href = m.src; $("#lbStage").classList.toggle("tall", m.h > m.w * 2); }
+function closeLB() { $("#lb").classList.remove("open"); $("#lbImg").src = ""; lastFocus && lastFocus.focus && lastFocus.focus(); }
 const stepLB = d => { lbI = (lbI + d + lbList.length) % lbList.length; showLB(); };
 
-/* palette */
-let palItems = [], palSel = 0;
+/* ---------- command palette ---------- */
+const SCOPES = [["all", "All"], ["Apps", "Apps"], ["Files", "Files & media"], ["Agents", "Agents"], ["Go to", "Views"], ["Deadlines", "Deadlines"], ["Actions", "Actions"]];
+const GORD = ["Apps", "Agents", "Files", "Deadlines", "Go to", "Actions"];
+let PAL = [], palItems = [], palSel = 0, palScope = "all";
+function goAgent(m) { location.hash = "#/team"; setTimeout(() => { const el = document.getElementById("agent-" + slug(m.name)); if (el) { el.scrollIntoView({ block: "center", behavior: "smooth" }); el.classList.add("flash"); setTimeout(() => el.classList.remove("flash"), 1500); } }, 80); }
 function palIndex() {
   return [
-    ...VIEWS.map(v => ({ g: "Go to", t: v.section ? v.section.title : v.label, s: "View", icon: v.icon, color: "#00e5ff", run: () => location.hash = "#/" + v.id })),
-    ...TEAM.map(m => ({ g: "Team", t: m.name, s: m.role + " · " + m.lanes.join(", "), icon: "users", color: m.color, run: () => { location.hash = "#/team"; setTimeout(() => { const el = document.getElementById("mate-" + slug(m.name)); if (el) { el.scrollIntoView({ block: "center" }); el.focus({ preventScroll: true }); el.classList.add("flash"); } }, 60); } })),
-    ...CARDS.map(c => ({ g: "Cards", t: c.title, s: c.section.title + " · " + (c.sub || host(c.url)), icon: c.icon, color: c.color, k: c.tag, run: () => openCard(c.id) })),
-    ...FILES.map(f => ({ g: "Files", t: f.name, s: f.project + " · " + f.type.toUpperCase() + (f.private ? " · Private" : ""), icon: f.private ? "lock" : "file", color: f.private ? "#fbbf24" : (TYPE_COLORS[f.type] || "#94a3b8"), run: () => f.private ? toast("Private item, not published", "lock") : openFile(f.id) })),
-    ...MEDIA.map(m => ({ g: "Images & media", t: m.title, s: m.project + " · " + (m.type || m.kind) + (m.private ? " · Private" : ""), icon: m.private ? "lock" : m.kind === "image" ? "image" : m.kind === "video" ? "play" : "music", color: m.private ? "#fbbf24" : projColor(m.project), img: m.kind === "image" && !m.private ? m.thumb : null, run: () => m.private ? toast("Private item, not published", "lock") : m.kind === "image" ? openLB(m.id) : (state.mk = m.kind, location.hash = "#/media", render()) })),
+    ...CARDS.map(c => ({ g: "Apps", t: c.title, s: (c.section.title) + " · " + (c.sub || "") + (c.private ? " · Private" : ""), icon: c.private ? "lock" : c.icon, color: c.color, run: () => { if (c.private || !c.url) return toast("Private item, not published", "lock"); addRecent("card", c.id); isExt(c.url) ? window.open(c.url, "_blank", "noopener") : (location.href = c.url); } })),
+    ...TEAM.map(m => ({ g: "Agents", t: m.name, s: m.role + (m.now ? " · " + m.now : ""), icon: "bot", color: m.color, run: () => goAgent(m) })),
+    ...FILES.map(f => ({ g: "Files", t: f.name, s: f.project + " · " + f.type.toUpperCase() + (f.private ? " · Private" : ""), icon: f.private ? "lock" : "file", color: f.private ? "#fbbf24" : projColor(f.project), run: () => openFile(f.id) })),
+    ...MEDIA.map(m => ({ g: "Files", t: m.title, s: m.project + " · " + (m.type || m.kind) + (m.private ? " · Private" : ""), icon: m.private ? "lock" : m.kind === "image" ? "image" : m.kind === "video" ? "play" : "music", color: m.private ? "#fbbf24" : projColor(m.project), img: m.kind === "image" && !m.private ? m.thumb : null, run: () => m.private ? toast("Private item, not published", "lock") : m.kind === "image" ? openLB(m.id) : (state.lk = m.kind, state.lp = "All", location.hash = "#/library") })),
+    ...VIEWS.map(v => ({ g: "Go to", t: v.section ? v.section.title : v.label, s: "View", icon: v.icon, color: "#F5A524", run: () => location.hash = "#/" + v.id })),
+    ...DEADLINES.map(d => ({ g: "Deadlines", t: d.title, s: (d.approx ? "About " : "") + fmtDate(d.date) + " · " + daysTo(d.date) + " days", icon: "timer", color: "#F5A524", run: () => { location.hash = "#/home"; setTimeout(() => { const el = document.getElementById("dl-" + d.id); el && el.scrollIntoView({ block: "center", behavior: "smooth" }); }, 80); } })),
+    { g: "Actions", t: "Toggle sidebar", s: "Collapse or expand ( [ )", icon: "layout", color: "#60a5fa", run: toggleCollapse },
+    { g: "Actions", t: "Toggle compact view", s: "Density", icon: "rows", color: "#60a5fa", run: toggleDensity },
+    { g: "Actions", t: "Open Edge Betting HQ", s: "/betting", icon: "trophy", color: "#22c55e", run: () => location.href = "betting/" },
+    { g: "Actions", t: "Open Rokhal Road Map", s: "/roadmap", icon: "map", color: "#7c5cff", run: () => location.href = "roadmap/" },
   ];
 }
-let PAL;
+const hl = (t, q) => { if (!q) return esc(t); const i = t.toLowerCase().indexOf(q); return i < 0 ? esc(t) : esc(t.slice(0, i)) + "<mark>" + esc(t.slice(i, i + q.length)) + "</mark>" + esc(t.slice(i + q.length)); };
 function palRender() {
-  const q = $("#palQ").value.trim().toLowerCase(), terms = q.split(/\s+/).filter(Boolean);
-  let list;
-  if (!terms.length) {
-    const rec = recent.slice(0, 5).map(r => { const x = resolveRecent(r); if (!x) return null; return PAL.find(p => p.t === x.t && p.g !== "Go to"); }).filter(Boolean).map(p => ({ ...p, g: "Recent" }));
-    list = [...rec, ...PAL.filter(p => p.g === "Go to"), ...favs.map(id => CARDS.find(c => c.id === id)).filter(Boolean).map(c => ({ ...PAL.find(p => p.g === "Cards" && p.t === c.title), g: "Favorites" }))];
-  } else {
-    list = PAL.map(p => { const h = (p.t + " " + p.s + " " + (p.k || "") + " " + p.g).toLowerCase(); if (!terms.every(t => h.includes(t))) return null; const tl = p.t.toLowerCase(); return { ...p, sc: (tl.startsWith(q) ? 0 : tl.includes(q) ? 1 : 2) }; }).filter(Boolean);
-    const order = ["Go to", "Team", "Cards", "Files", "Images & media"]; list.sort((a, b) => order.indexOf(a.g) - order.indexOf(b.g) || a.sc - b.sc); list = list.slice(0, 40);
-  }
-  palItems = list; palSel = Math.min(palSel, Math.max(0, list.length - 1));
+  const raw = $("#palQ").value.trim().toLowerCase(), toks = raw.split(/\s+/).filter(Boolean);
+  let items = PAL.filter(p => palScope === "all" || p.g === palScope);
+  if (toks.length) items = items.map(p => { const hay = (p.t + " " + p.s + " " + p.g).toLowerCase(); if (!toks.every(t => hay.includes(t))) return null; const tl = p.t.toLowerCase(); return { p, sc: tl.startsWith(raw) ? 0 : tl.includes(raw) ? 1 : 2 }; }).filter(Boolean).sort((a, b) => GORD.indexOf(a.p.g) - GORD.indexOf(b.p.g) || a.sc - b.sc).map(x => x.p);
+  else items = items.filter(p => palScope !== "all" || ["Go to", "Agents", "Deadlines"].includes(p.g) || (p.g === "Apps" && favs.some(f => p.t === (CARDS.find(c => c.id === f) || {}).title)));
+  palItems = items.slice(0, 60);
+  palSel = Math.min(palSel, Math.max(0, palItems.length - 1));
   let g = "", html = "";
-  list.forEach((p, i) => { if (p.g !== g) { g = p.g; html += `<div class="pal-g">${esc(g)}</div>`; } html += `<div class="pal-i${i === palSel ? " sel" : ""}" data-pi="${i}" id="pi-${i}" role="option" aria-selected="${i === palSel}"><div class="mini" style="background:${hexA(p.color, .14)}">${p.img ? `<img src="${esc(p.img)}" alt="">` : ic(p.icon, 15, p.color)}</div><div style="min-width:0"><div class="pt">${esc(p.t)}</div><div class="ps">${esc(p.s)}</div></div><span class="go">${p.g === "Go to" ? "Go" : "Open"} ↵</span></div>`; });
-  $("#palList").innerHTML = html || `<div class="empty" style="margin:8px;border:0">${ic("note", 26, "#5f6a77", 1.6)}<div class="et">No results for "${esc(q)}"</div><div>Try a site, project or file type.</div></div>`;
-  const sel = $(".pal-i.sel"); sel && sel.scrollIntoView({ block: "nearest" });
-  $("#palQ").setAttribute("aria-activedescendant", sel ? sel.id : "");
+  palItems.forEach((p, i) => { if (p.g !== g) { g = p.g; html += `<div class="pg">${esc(g === "Files" ? "Files & media" : g)}</div>`; } html += `<div class="pi${i === palSel ? " on" : ""}" role="option" aria-selected="${i === palSel}" data-pi="${i}" id="pi${i}">${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy">` : `<span class="ti" style="--c:${p.color}">${ic(p.icon, 16)}</span>`}<div style="min-width:0"><div class="pt">${hl(p.t, raw)}</div><div class="ps">${hl(p.s, raw)}</div></div><span class="pk">${i === palSel ? "↵" : ""}</span></div>`; });
+  $("#palList").innerHTML = html || `<div class="empty">No matches for "${esc(raw)}"</div>`;
+  $("#palCount").textContent = plural(palItems.length, "result");
+  $("#palScopes").innerHTML = SCOPES.map(([k, l]) => `<button class="chip${palScope === k ? " on" : ""}" data-scope="${k}">${l}</button>`).join("");
+  const on = $("#pi" + palSel); on && on.scrollIntoView({ block: "nearest" });
 }
-let lastFocus = null;
-function openPal() { lastFocus = document.activeElement; PAL = palIndex(); $("#pal").classList.add("open"); const i = $("#palQ"); i.value = ""; palSel = 0; palRender(); i.focus(); }
-const closePal = () => { $("#pal").classList.remove("open"); if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true }); };
+function openPal() { lastFocus = document.activeElement; PAL = palIndex(); palScope = "all"; $("#pal").classList.add("open"); const i = $("#palQ"); i.value = ""; palSel = 0; palRender(); i.focus(); }
+function closePal() { $("#pal").classList.remove("open"); lastFocus && lastFocus.focus && lastFocus.focus({ preventScroll: true }); }
 function runPal(i) { const p = palItems[i]; if (!p) return; closePal(); p.run(); }
+
+/* ---------- actions ---------- */
+function toggleCollapse() { const on = document.body.classList.toggle("collapsed"); store.set("collapsed", on); const b = $(".collapse"); b.setAttribute("aria-expanded", !on); b.setAttribute("aria-label", on ? "Expand sidebar" : "Collapse sidebar"); }
+function toggleDensity() { const on = document.body.classList.toggle("compact"); store.set("compact", on); $("#densLbl").textContent = on ? "Comfortable view" : "Compact view"; toast(on ? "Compact view" : "Comfortable view", "rows"); }
 
 /* ---------- events ---------- */
 document.addEventListener("click", e => {
   const t = e.target;
-  const cp = t.closest("[data-copy]"); if (cp) { e.stopPropagation(); return copy(cp.dataset.copy); }
-  const fv = t.closest("[data-fav]"); if (fv) { e.stopPropagation(); return toggleFav(fv.dataset.fav); }
-  const oc = t.closest("[data-open-card]"); if (oc) return openCard(oc.dataset.openCard);
+  const cp = t.closest("[data-copy]"); if (cp) { e.preventDefault(); e.stopPropagation(); return copy(cp.dataset.copy); }
+  const fv = t.closest("[data-fav]"); if (fv) { e.preventDefault(); e.stopPropagation(); return toggleFav(fv.dataset.fav); }
+  if (t.closest("video,audio")) return;
+  const pv = t.closest("[data-priv]"); if (pv) return toast("Private item, not published", "lock");
   const of = t.closest("[data-open-file]"); if (of) return openFile(of.dataset.openFile);
+  const om = t.closest("[data-open-media]"); if (om) { const m = MEDIA.find(x => x.id === om.dataset.openMedia); if (m) { addRecent("media", m.id); window.open(m.src, "_blank", "noopener"); } return; }
   const lb = t.closest("[data-lb]"); if (lb) return openLB(lb.dataset.lb);
-  const rc = t.closest("[data-rec]"); if (rc) { const [k, id] = rc.dataset.rec.split(":"); addRecent(k, id); }
-  const go = t.closest("[data-go]"); if (go) { location.hash = "#/" + go.dataset.go; return; }
-  const fp = t.closest("[data-fp]"); if (fp) { state.fp = fp.dataset.fp; $$("#fchips .chip").forEach(c => { c.classList.toggle("on", c === fp); c.setAttribute("aria-pressed", c === fp); }); return drawFiles(); }
-  const mk = t.closest("[data-mk]"); if (mk) { state.mk = mk.dataset.mk; $$("[data-mk]").forEach(c => { c.classList.toggle("on", c === mk); c.setAttribute("aria-pressed", c === mk); }); return drawMedia(); }
-  const mp = t.closest("[data-mp]"); if (mp) { state.mp = mp.dataset.mp; $$("[data-mp]").forEach(c => { c.classList.toggle("on", c === mp); c.setAttribute("aria-pressed", c === mp); }); return drawMedia(); }
+  const rc = t.closest("[data-rec]"); if (rc) { const [k, ...id] = rc.dataset.rec.split(":"); addRecent(k, id.join(":")); }
+  const sc = t.closest("[data-scope]"); if (sc) { palScope = sc.dataset.scope; palSel = 0; palRender(); $("#palQ").focus(); return; }
   const pi = t.closest("[data-pi]"); if (pi) return runPal(+pi.dataset.pi);
+  const lp = t.closest("[data-lp]"); if (lp) { state.lp = lp.dataset.lp; $$("[data-lp]").forEach(b => b.classList.toggle("on", b === lp)); if (location.hash.includes("?")) history.replaceState(null, "", "#/" + current); return drawLib(); }
+  const lk = t.closest("[data-lk]"); if (lk) { state.lk = lk.dataset.lk; $$("[data-lk]").forEach(b => b.classList.toggle("on", b === lk)); return drawLib(); }
+  const ly = t.closest("[data-layout]"); if (ly) { state.layout = ly.dataset.layout; store.set("libLayout", state.layout); $$("[data-layout]").forEach(b => b.classList.toggle("on", b === ly)); return drawLib(); }
   const a = t.closest("[data-act]"); if (!a) return;
   const act = a.dataset.act;
   if (act === "pal-bg" && t !== a) return;
   ({
     palette: openPal, "pal-bg": closePal,
-    drawer: () => { document.body.classList.add("drawer"); setTimeout(() => { const a = $("#nav a.on") || $("#nav a"); a && a.focus(); }, 50); }, "drawer-close": () => document.body.classList.remove("drawer"),
-    collapse: () => { const on = document.body.classList.toggle("collapsed"); store.set("collapsed", on); a.setAttribute("aria-expanded", !on); a.setAttribute("aria-label", on ? "Expand sidebar" : "Collapse sidebar"); },
-    density: () => { const on = document.body.classList.toggle("compact"); store.set("compact", on); $("#densLbl").textContent = on ? "Comfortable view" : "Compact view"; a.setAttribute("aria-pressed", on); toast(on ? "Compact view" : "Comfortable view", "menu"); },
+    drawer: () => document.body.classList.add("drawer"), "drawer-close": () => document.body.classList.remove("drawer"),
+    collapse: toggleCollapse, density: toggleDensity,
     "lb-close": closeLB, "lb-prev": () => stepLB(-1), "lb-next": () => stepLB(1),
     "clear-recent": () => { recent = []; store.set("recent", []); render(false); },
-    "folders-all": () => { const ds = $$("details.folder"), open = !ds.every(d => d.open); ds.forEach(d => { d.open = open; folderOpen[d.dataset.folder] = open; }); store.set("folderOpen", folderOpen); },
-    fclear: () => { state.fq = ""; state.fp = "All"; render(false); },
+    lclear: () => { state.lq = ""; state.lp = "All"; state.lk = "all"; render(false); },
   }[act] || (() => {}))();
 });
-document.addEventListener("toggle", e => { const d = e.target; if (d.matches && d.matches("details.folder")) { folderOpen[d.dataset.folder] = d.open; store.set("folderOpen", folderOpen); } }, true);
-document.addEventListener("play", e => { const r = e.target.dataset && e.target.dataset.rec; if (r) { const [k, id] = r.split(":"); addRecent(k, id); } $$("video,audio").forEach(m => m !== e.target && m.pause()); }, true);
+document.addEventListener("play", e => { $$("video,audio").forEach(m => m !== e.target && m.pause()); }, true);
 document.addEventListener("keydown", e => {
-  const typing = /INPUT|TEXTAREA/.test(document.activeElement.tagName);
+  const typing = /INPUT|TEXTAREA/.test((document.activeElement || {}).tagName);
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); return $("#pal").classList.contains("open") ? closePal() : openPal(); }
   if ($("#pal").classList.contains("open")) {
     if (e.key === "Escape") return closePal();
     if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); palSel = (palSel + (e.key === "ArrowDown" ? 1 : -1) + palItems.length) % Math.max(1, palItems.length); return palRender(); }
+    if (e.key === "Tab") { e.preventDefault(); const i = SCOPES.findIndex(s => s[0] === palScope); palScope = SCOPES[(i + (e.shiftKey ? -1 : 1) + SCOPES.length) % SCOPES.length][0]; palSel = 0; return palRender(); }
     if (e.key === "Enter") { e.preventDefault(); return runPal(palSel); }
     return;
   }
   if ($("#lb").classList.contains("open")) { if (e.key === "Escape") closeLB(); if (e.key === "ArrowRight") stepLB(1); if (e.key === "ArrowLeft") stepLB(-1); return; }
   if (e.key === "Escape") document.body.classList.remove("drawer");
-  if (!typing && e.key === "/") { e.preventDefault(); openPal(); }
+  if (typing) return;
+  if (e.key === "/") { e.preventDefault(); openPal(); }
+  if (e.key === "[") toggleCollapse();
   const ae = document.activeElement;
-  if (!typing && (e.key === "Enter" || e.key === " ") && ae && ae.matches && ae.matches("[data-open-card],[data-open-file],.ritem[data-lb],.ritem[data-go]")) { e.preventDefault(); ae.click(); }
+  if ((e.key === "Enter" || e.key === " ") && ae && ae.matches && ae.matches("[data-open-file],[data-lb],[data-priv],tr[data-open-media]")) { e.preventDefault(); ae.click(); }
 });
 $("#palQ").addEventListener("input", () => { palSel = 0; palRender(); });
 $("#lb").addEventListener("click", e => { if (e.target.id === "lbStage") closeLB(); });
-window.addEventListener("hashchange", () => { render(); $("#content").focus({ preventScroll: true }); });
+window.addEventListener("hashchange", () => { const go = () => { render(); $("#content").focus({ preventScroll: true }); }; document.startViewTransition && !matchMedia("(prefers-reduced-motion:reduce)").matches ? (() => { const vt = document.startViewTransition(go); [vt.ready, vt.finished, vt.updateCallbackDone].forEach(pr => pr && pr.catch(() => {})); })() : go(); });
 let tx = 0; document.addEventListener("touchstart", e => tx = e.touches[0].clientX, { passive: true });
 document.addEventListener("touchend", e => { if (!$("#lb").classList.contains("open")) return; const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 60) stepLB(dx < 0 ? 1 : -1); }, { passive: true });
 
 /* ---------- boot ---------- */
 if (store.get("compact", false)) { document.body.classList.add("compact"); $("#densLbl").textContent = "Comfortable view"; }
-if (store.get("collapsed", false)) document.body.classList.add("collapsed");
+if (store.get("collapsed", false)) { document.body.classList.add("collapsed"); $(".collapse").setAttribute("aria-expanded", "false"); }
 $("#kk1").textContent = $("#kk2").textContent = isMac ? "⌘K" : "Ctrl K";
-function tick() { const n = new Date(); $("#time").textContent = n.toLocaleTimeString("en-US", { timeZone: TZ, hour: "numeric", minute: "2-digit" }); $("#date").textContent = n.toLocaleDateString("en-US", { timeZone: TZ, weekday: "short", month: "short", day: "numeric" }) + " · ET"; }
+function tick() {
+  const n = new Date();
+  $("#time").textContent = n.toLocaleTimeString("en-US", { timeZone: TZ, hour: "numeric", minute: "2-digit" });
+  $("#date").textContent = n.toLocaleDateString("en-US", { timeZone: TZ, weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  $("#greet").innerHTML = `${greeting()}, <em>Ronnie</em>`;
+}
 tick(); setInterval(tick, 15000);
+setInterval(() => { if (current === "home" && !document.hidden) tickDeadlines(); }, 1000);
 buildNav(); render();
 })();

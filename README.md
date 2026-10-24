@@ -1,6 +1,6 @@
-# Ronnie's Command Center (v2)
+# Ronnie's Command Center (v3)
 
-Live: https://rfunes92.github.io/command-center/
+Live: https://hub.rokhaldigital.com (repo Rfunes92/command-center, branch main, CNAME). v3 = dark glass theme in Rokhal navy + amber, collapsible icon sidebar ( [ ), Ctrl/⌘ K palette with scopes (Tab), live deadline countdowns, Road to 3 ring, agent status cards and a Project library (#/library).
 
 An app-style home base: sidebar views (Home, Rokhal, Blaze, Apps, Money, Planning, Files, Images & Media, Notes), a Ctrl/⌘ K command palette that searches everything, and favorites, recently opened, density and sidebar state saved in your browser.
 
@@ -9,7 +9,8 @@ No build step. Files:
 | File | What it is |
 |---|---|
 | `data.js` | **All content.** Edit only this file to add or change anything. |
-| `index.html` | Layout and styles |
+| `index.html` | Layout shell |
+| `styles.css` | All styles (v3) |
 | `app.js` | Behavior (routing, palette, lightbox, favorites) |
 | `assets/files/` | Downloadable documents |
 | `assets/images/` (+ `thumbs/`) | Gallery images (full size + ~640px thumbnail) |
@@ -88,3 +89,7 @@ Run `scripts/bump.sh` right before committing. It sets `?v=<unix time>` on every
 ```bash
 scripts/bump.sh && git add -A && git commit -m "Update" && git push
 ```
+
+## v3 data fields
+- `CC.deadlines`: `{ title, date: "YYYY-MM-DD", approx?, project?, note? }`. Countdown runs live in the browser, in ET.
+- `CC.agentStatus`: `{ "Name": { state: "active"|"standby"|"watching", now, url? } }`. Set by hand; not live.
