@@ -41,7 +41,7 @@
     return parts.length ? `<span class="ibs">${parts.join('')}</span>` : '';
   }
   function explain(g) {
-    const o = g.odds; if (!o) return 'No line posted yet.';
+    const o = g.odds; if (!o) return g.books ? 'ESPN has no line yet; DraftKings and FanDuel prices are above.' : 'No line posted yet.';
     const a = o.spread && o.spread.away && o.spread.away.line, h = o.spread && o.spread.home && o.spread.home.line;
     let s = '';
     if (a != null || h != null) {
@@ -63,6 +63,120 @@
   }
   const noVig = (a, b) => { if (!E.validOdds(a) || !E.validOdds(b)) return null; const x = E.implied(a), y = E.implied(b); return { a: x / (x + y), b: y / (x + y), hold: x + y - 1 }; };
 
+  // ---------- DraftKings vs FanDuel (The Odds API) ----------
+  const DEC = (o) => (o > 0 ? 1 + o / 100 : 1 + 100 / Math.abs(o));
+  // Which book gives the bettor the better deal. kind: 'spread' (higher line better), 'over' (lower line better), 'under' (higher), 'ml'.
+  function bestBook(dk, fd, kind) {
+    if (!dk || !fd || dk.odds == null || fd.odds == null) return null;
+    if (kind !== 'ml' && dk.line != null && fd.line != null && dk.line !== fd.line) return (kind === 'over' ? dk.line < fd.line : dk.line > fd.line) ? 'DraftKings' : 'FanDuel';
+    return DEC(dk.odds) === DEC(fd.odds) ? null : DEC(dk.odds) > DEC(fd.odds) ? 'DraftKings' : 'FanDuel';
+  }
+  function bookSides(g) { // normalized {market: {DraftKings:{line,odds}, FanDuel:{...}}}
+    const b = g.books || {}; const out = {};
+    const put = (k, bk, v) => { if (v && v.odds != null) (out[k] = out[k] || {})[bk] = v; };
+    for (const bk of ['DraftKings', 'FanDuel']) { const o = b[bk]; if (!o) continue;
+      if (o.spread) { put('spread_away', bk, o.spread.away); put('spread_home', bk, o.spread.home); }
+      if (o.ml) { put('ml_away', bk, o.ml.away != null ? { odds: o.ml.away } : null); put('ml_home', bk, o.ml.home != null ? { odds: o.ml.home } : null); }
+      if (o.total && o.total.line != null) { put('over', bk, { line: o.total.line, odds: o.total.over }); put('under', bk, { line: o.total.line, odds: o.total.under }); } }
+    return out;
+  }
+  const KIND = (k) => (k.startsWith('spread') ? 'spread' : k.startsWith('ml') ? 'ml' : k);
+  const cellTxt = (v, k) => (!v ? '—' : (k.startsWith('spread') ? sgn(v.line) + ' ' : k === 'over' ? 'o' + v.line + ' ' : k === 'under' ? 'u' + v.line + ' ' : '') + E.fmtOdds(v.odds));
+  function bookCell(m, k, bk) {
+    const v = m && m[bk]; const best = m && bestBook(m.DraftKings, m.FanDuel, KIND(k)) === bk;
+    const ln = !v ? '—' : k.startsWith('spread') ? sgn(v.line) : k === 'over' ? 'o' + v.line : k === 'under' ? 'u' + v.line : E.fmtOdds(v.odds);
+    const sub = v && !k.startsWith('ml') ? `<small>${E.esc(E.fmtOdds(v.odds))}</small>` : '';
+    return `<span class="bkc${best ? ' best' : ''}"${best ? ' title="Best price"' : ''}><b>${E.esc(ln)}</b>${sub}</span>`;
+  }
+  function cardBooks(g) {
+    const s = bookSides(g); if (!Object.keys(s).length) return '';
+    const row = (t, side) => `<div class="bk-row"><span class="bk-t">${E.esc(t.abbr || t.short)}</span>${bookCell(s['spread_' + side], 'spread_' + side, 'DraftKings')}${bookCell(s['spread_' + side], 'spread_' + side, 'FanDuel')}${bookCell(s['ml_' + side], 'ml_' + side, 'DraftKings')}${bookCell(s['ml_' + side], 'ml_' + side, 'FanDuel')}</div>`;
+    return `<div class="bk"><div class="bk-row bk-h"><span></span><span>Spread DK</span><span>Spread FD</span><span>Win DK</span><span>Win FD</span></div>${row(g.away, 'away')}${row(g.home, 'home')}
+      ${s.over ? `<div class="bk-row bk-tot"><span class="bk-t">Total</span>${bookCell(s.over, 'over', 'DraftKings')}${bookCell(s.over, 'over', 'FanDuel')}${bookCell(s.under, 'under', 'DraftKings')}${bookCell(s.under, 'under', 'FanDuel')}</div>` : ''}
+      <div class="bk-leg"><span class="bkc best">cyan</span> = best price between DraftKings and FanDuel</div></div>`;
+  }
+  function sheetBooks(g) {
+    const s = bookSides(g); if (!Object.keys(s).length) return '';
+    const A = g.away.abbr || g.away.short, H = g.home.abbr || g.home.short;
+    const rows = [['spread_away', A + ' spread'], ['spread_home', H + ' spread'], ['ml_away', A + ' to win'], ['ml_home', H + ' to win'], ['over', 'Over'], ['under', 'Under']].filter(([k]) => s[k]);
+    return `<div class="sh-sec"><div class="card-label">DraftKings vs FanDuel</div><table class="otbl bktbl"><thead><tr><th>Bet</th><th class="r">DraftKings</th><th class="r">FanDuel</th></tr></thead><tbody>
+      ${rows.map(([k, l]) => { const b = bestBook(s[k].DraftKings, s[k].FanDuel, KIND(k)); return `<tr><td>${E.esc(l)}${b ? ` <span class="bp">Best: ${b === 'DraftKings' ? 'DK' : 'FD'}</span>` : ''}</td><td class="r">${bookCell(s[k], k, 'DraftKings')}</td><td class="r">${bookCell(s[k], k, 'FanDuel')}</td></tr>`; }).join('')}
+      </tbody></table><p class="muted small">Prices via The Odds API${g.booksUpdated ? ', pulled ' + E.esc(E.fmtET(g.booksUpdated)) : ''}. Always confirm in the app before betting.</p></div>`;
+  }
+  function fighterBooks(x, o) {
+    const b = x.books; if (!b || (b.DraftKings == null && b.FanDuel == null)) return '';
+    const m = { DraftKings: b.DraftKings != null ? { odds: b.DraftKings } : null, FanDuel: b.FanDuel != null ? { odds: b.FanDuel } : null };
+    const best = bestBook(m.DraftKings, m.FanDuel, 'ml');
+    return `<div class="fbk"><span class="bkc${best === 'DraftKings' ? ' best' : ''}">DK ${b.DraftKings != null ? E.esc(E.fmtOdds(b.DraftKings)) : '—'}</span><span class="bkc${best === 'FanDuel' ? ' best' : ''}">FD ${b.FanDuel != null ? E.esc(E.fmtOdds(b.FanDuel)) : '—'}</span></div>`;
+  }
+  window.EdgeBooks = { bestBook, bookSides, DEC };
+
+  // ---------- Research extras: weather, fair price, model vs market, line history ----------
+  function wxBadge(g) {
+    if (g.indoor) return '<span class="wx">Dome</span>';
+    const w = g.wx; if (!w) return '';
+    const warn = w.wind >= 15 || w.gust >= 25 || (w.precip != null && w.precip >= 50);
+    return `<span class="wx${warn ? ' warn' : ''}" title="Kickoff forecast (Open-Meteo)">${w.wind}mph${w.gust >= w.wind + 8 ? '/' + w.gust : ''} · ${w.temp}°${w.precip ? ' · ' + w.precip + '%☂' : ''}</span>`;
+  }
+  const pairNV = (a, b) => (E.validOdds(a) && E.validOdds(b) ? noVig(a, b) : null);
+  // Market win chance with the bookmaker's cut removed, averaged over DK and FD (falls back to ESPN's line).
+  function marketProb(g) {
+    const bs = []; for (const bk of ['DraftKings', 'FanDuel']) { const o = g.books && g.books[bk]; const nv = o && o.ml && pairNV(o.ml.away, o.ml.home); if (nv) bs.push(nv); }
+    if (!bs.length) { const ml = (g.odds && g.odds.moneyline) || {}; const nv = pairNV(ml.away && ml.away.odds, ml.home && ml.home.odds); if (nv) bs.push(nv); }
+    if (!bs.length) return null; return { away: bs.reduce((s, x) => s + x.a, 0) / bs.length, home: bs.reduce((s, x) => s + x.b, 0) / bs.length, n: bs.length };
+  }
+  function bestML(g, side) {
+    const c = []; for (const bk of ['DraftKings', 'FanDuel']) { const o = g.books && g.books[bk]; if (o && o.ml && E.validOdds(o.ml[side])) c.push([bk, o.ml[side]]); }
+    if (!c.length) { const ml = g.odds && g.odds.moneyline && g.odds.moneyline[side]; if (ml && E.validOdds(ml.odds)) c.push([g.odds.provider || 'ESPN', ml.odds]); }
+    return c.sort((a, b) => DEC(b[1]) - DEC(a[1]))[0] || null;
+  }
+  const toAm = (p) => (E.probToAmerican ? E.probToAmerican(p) : null);
+  const ev = (p, odds) => p * DEC(odds) - 1;
+  function valueRows() {
+    const rows = [];
+    for (const k of ['nfl', 'cfb']) for (const g of (games && games[k] && games[k].games) || []) {
+      if (!g.model || g.status.state !== 'pre') continue; const mk = marketProb(g); if (!mk) continue;
+      for (const side of ['away', 'home']) { const gap = g.model[side] - mk[side]; const b = bestML(g, side); if (gap >= 0.05 && b) rows.push({ g, k, side, gap, model: g.model[side], mkt: mk[side], book: b[0], odds: b[1], ev: ev(g.model[side], b[1]) }); }
+    }
+    return rows.sort((a, b) => b.gap - a.gap);
+  }
+  function renderValue() {
+    const el = $('valueBoard'); if (!el || !games) return;
+    const sk = Object.keys({ all: 1, nfl: 1, cfb: 1 }).includes(sportKeyLocal()) ? sportKeyLocal() : null;
+    const rows = valueRows().filter((r) => !sk || sk === 'all' || r.k === sk).slice(0, 6);
+    $('valueSec').hidden = sk === null;
+    rows.forEach((r) => (index[r.g.id] = { type: 'fb', g: r.g, key: r.k }));
+    el.innerHTML = rows.length ? rows.map((r) => { const t = r.g[r.side], o = r.g[r.side === 'away' ? 'home' : 'away'];
+      return `<button class="vb-row" data-key="${E.esc(r.g.id)}"><span class="vb-team">${logo(t)}<span><b>${E.esc(t.short || t.name)}</b> <span class="muted small">${r.side === 'away' ? '@' : 'vs'} ${E.esc(o.abbr || o.short)}</span><br><span class="muted small">${E.esc(r.k === 'nfl' ? 'NFL' : 'College')} · ${kick(r.g.start)}</span></span></span>
+        <span class="vb-num"><small>ESPN model</small><b>${E.pct(r.model, 0)}</b></span><span class="vb-num"><small>Market</small><b>${E.pct(r.mkt, 0)}</b></span>
+        <span class="vb-num gap"><small>Gap</small><b>+${Math.round(r.gap * 100)}</b></span><span class="vb-num"><small>Best ML</small><b class="cy">${E.esc(E.fmtOdds(r.odds))}</b><small>${E.esc(r.book === 'DraftKings' ? 'DK' : r.book === 'FanDuel' ? 'FD' : r.book)}</small></span></button>`; }).join('')
+      : '<div class="empty">No model-vs-market gaps of 5+ points right now.</div>';
+  }
+  const sportKeyLocal = () => sportKey();
+  let hist = null, histLoading = null;
+  function loadHist() { if (hist || histLoading) return histLoading; histLoading = fetch('data/history.json?t=' + Math.floor(Date.now() / 6e5)).then((r) => (r.ok ? r.json() : null)).catch(() => null).then((j) => { hist = j || { games: {} }; return hist; }); return histLoading; }
+  function spark(pts, label, fmt) {
+    const v = pts.map((p) => p[1]).filter((x) => x != null); if (v.length < 2) return '';
+    const W = 260, Hh = 46, min = Math.min(...v), max = Math.max(...v), rng = max - min || 1;
+    const xy = pts.filter((p) => p[1] != null).map((p, i, a) => [(i / (a.length - 1)) * (W - 8) + 4, Hh - 6 - ((p[1] - min) / rng) * (Hh - 14)]);
+    return `<div class="spark"><div class="sp-l"><span>${E.esc(label)}</span><b>${E.esc(fmt(v[0]))} → ${E.esc(fmt(v[v.length - 1]))}</b></div><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="#00e5ff" stroke-width="2" points="${xy.map((p) => p.map((n) => n.toFixed(1)).join(',')).join(' ')}"/>${xy.map((p, i) => i === xy.length - 1 ? `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#00e5ff"/>` : '').join('')}</svg></div>`;
+  }
+  async function fillHistory(id, kind, names) {
+    const el = $('shHist'); if (!el) return; const h = await loadHist(); const arr = (h && h.games && h.games[id]) || [];
+    if (arr.length < 2) { el.innerHTML = `<p class="muted small">History builds from our own 3-hour snapshots (${arr.length} so far). Check back after a few updates.</p>`; return; }
+    const pick = (i) => arr.map((p) => [p[0], p[i]]);
+    el.innerHTML = (kind === 'fb' ? spark(pick(1), names[0] + ' spread', sgn) + spark(pick(2), 'Total', String) + spark(pick(3), names[0] + ' moneyline', E.fmtOdds)
+      : spark(pick(1), names[0], E.fmtOdds) + spark(pick(2), names[1], E.fmtOdds)) + `<p class="muted small">${arr.length} points since ${arr[0][0] === 'open' ? 'the opening line' : E.esc(E.fmtET(arr[0][0]))} (ESPN/DraftKings line, snapshot every 3h).</p>`;
+  }
+  function sheetModel(g) {
+    const mk = marketProb(g); const A = g.away.abbr || g.away.short, H = g.home.abbr || g.home.short;
+    if (!g.model && !mk) return '';
+    const row = (side, nm) => { const b = bestML(g, side); const m = g.model ? g.model[side] : null, k = mk ? mk[side] : null; const fair = k != null ? toAm(k) : null;
+      return `<tr><td>${E.esc(nm)}</td><td class="r">${m != null ? E.pct(m, 0) : '—'}</td><td class="r">${k != null ? E.pct(k, 0) : '—'}</td><td class="r">${fair != null ? E.esc(E.fmtOdds(fair)) : '—'}</td><td class="r">${b ? `<span class="cy">${E.esc(E.fmtOdds(b[1]))}</span>` : '—'}</td><td class="r ${k != null && b ? (ev(k, b[1]) >= 0 ? 'pos' : 'muted') : ''}">${k != null && b ? (ev(k, b[1]) * 100).toFixed(1) + '%' : '—'}</td></tr>`; };
+    return `<div class="sh-sec"><div class="card-label">Fair price & model check</div><table class="otbl fair"><thead><tr><th>Win</th><th class="r">ESPN model</th><th class="r">Market</th><th class="r">Fair</th><th class="r">Best</th><th class="r">Edge</th></tr></thead><tbody>${row('away', A)}${row('home', H)}</tbody></table>
+      <p class="muted small"><b>Market</b> = win chance from the moneylines with the book's cut removed${mk && mk.n === 2 ? ' (DK and FD averaged)' : ''}. <b>Fair</b> = that chance as odds. <b>Edge</b> = what the best available price pays vs fair; near 0% or negative is normal. ESPN's model can miss late news, so a big model gap is a lead to check, not a bet.</p></div>`;
+  }
+
   // ---------- Cards ----------
   function footballCard(g, key) {
     const o = g.odds || {}; const sp = o.spread || {}, ml = o.moneyline || {};
@@ -71,16 +185,17 @@
       <div class="oc"><span>${ml[side] && ml[side].odds != null ? O(ml[side].odds) : '—'}</span><small>${ml[side] && ml[side].odds != null ? E.pct(E.implied(ml[side].odds), 0) : ''}</small></div></div>`;
     const live = g.status.state === 'in', fin = g.status.state === 'post';
     return `<button class="game" data-key="${E.esc(g.id)}">
-      <div class="g-top"><span class="tag">${g.sport === 'NFL' ? 'NFL' : 'College'}</span><span class="g-time${live ? ' live' : ''}">${live ? 'LIVE · ' + E.esc(g.status.detail) : fin ? 'Final' : kick(g.start)}</span></div>
+      <div class="g-top"><span class="tag">${g.sport === 'NFL' ? 'NFL' : 'College'}</span>${wxBadge(g)}<span class="g-time${live ? ' live' : ''}">${live ? 'LIVE · ' + E.esc(g.status.detail) : fin ? 'Final' : kick(g.start)}</span></div>
       <div class="g-head"><span></span><span>Spread</span><span>Win (ML)</span></div>
       ${row(g.away, 'away')}${row(g.home, 'home')}
-      <div class="g-foot"><span>${o.total && o.total.line != null ? `Total <b>${o.total.line}</b>` : ''}${o.total && o.total.openLine != null && o.total.openLine !== o.total.line ? ` <span class="mv">(opened ${o.total.openLine})</span>` : ''}</span><span class="prov">${o.provider ? 'Odds: ' + E.esc(o.provider) : 'No odds yet'}</span></div>
+      ${g.status.state === 'pre' ? cardBooks(g) : ''}
+      <div class="g-foot"><span>${o.total && o.total.line != null ? `Total <b>${o.total.line}</b>` : ''}${o.total && o.total.openLine != null && o.total.openLine !== o.total.line ? ` <span class="mv">(opened ${o.total.openLine})</span>` : ''}</span><span class="prov">${o.provider ? 'Odds: ' + E.esc(o.provider) : g.books ? 'DK/FD via The Odds API' : 'No odds yet'}</span></div>
       <div class="g-explain">${E.esc(explain(g))}</div></button>`;
   }
   function fighter(f, side) {
     return `<div class="ft ${side}"><div class="hs-wrap">${f.headshot ? `<img class="hs" src="${E.esc(f.headshot)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'hs ph',textContent:'${E.esc((f.name || '?')[0])}'}))">` : `<span class="hs ph">${E.esc((f.name || '?')[0])}</span>`}</div>
       <div class="ft-name">${E.esc(f.name)}</div><div class="tm-sub">${E.esc(f.record || '')}${f.country ? ' · ' + E.esc(f.country) : ''}</div>
-      <div class="ft-ml">${f.ml != null ? O(f.ml) : '—'}</div><div class="tm-sub">${f.ml != null ? E.pct(E.implied(f.ml), 0) + ' implied' : 'no line'}</div></div>`;
+      <div class="ft-ml">${f.ml != null ? O(f.ml) : '—'}</div><div class="tm-sub">${f.ml != null ? E.pct(E.implied(f.ml), 0) + ' implied' : 'no line'}</div>${fighterBooks(f)}</div>`;
   }
   function fightCard(ev, f, i) {
     const [a, b] = f.fighters; if (!a || !b) return '';
@@ -150,7 +265,11 @@
         </tbody></table>
         <p class="explain">${E.esc(explain(g))}</p>
         ${nv ? `<p class="muted small">No-vig win chance (from moneylines): ${E.esc(g.away.abbr)} ${E.pct(nv.a)} · ${E.esc(g.home.abbr)} ${E.pct(nv.b)} · book's cut ${E.pct(nv.hold)}</p>` : ''}
-        <p class="muted small">This is one book's price. "Shop" copies it into the Line shop so you can add FanDuel's number and compare.</p>` : '<p class="muted small">No line posted yet.</p>'}</div>
+        ${g.books ? '' : `<p class="muted small">This is one book's price. "Shop" copies it into the Line shop so you can add FanDuel's number and compare.</p>`}` : '<p class="muted small">No line posted yet.</p>'}</div>
+        ${sheetBooks(g)}
+        ${sheetModel(g)}
+        ${g.wx ? `<div class="sh-sec"><div class="card-label">Kickoff weather</div><p class="small">${g.wx.temp}°F · wind ${g.wx.wind} mph (gusts ${g.wx.gust}) · rain chance ${g.wx.precip ?? '—'}% <span class="muted">· Open-Meteo forecast</span></p>${g.wx.wind >= 15 || g.wx.gust >= 25 ? '<p class="muted small">Strong wind tends to hurt passing and kicking, which can push totals down. Check the forecast again close to kickoff.</p>' : ''}</div>` : g.indoor ? '<div class="sh-sec"><div class="card-label">Kickoff weather</div><p class="small muted">Indoor stadium: weather is not a factor.</p></div>' : ''}
+        <div class="sh-sec"><div class="card-label">Line movement</div><div id="shHist"><p class="muted small">Loading…</p></div></div>
         <div class="sh-sec"><div class="card-label">${E.esc(g.away.short || g.away.name)} injuries</div>${injList(it.key, g.away)}</div>
         <div class="sh-sec"><div class="card-label">${E.esc(g.home.short || g.home.name)} injuries</div>${injList(it.key, g.home)}</div>
         <div class="sh-sec"><div class="card-label">Research this matchup</div>${links(SITES[g.sport](g))}</div>`;
@@ -172,9 +291,12 @@
         <p class="explain">${E.esc([mlExplain(a.short || a.name, a.ml), mlExplain(b.short || b.name, b.ml)].filter(Boolean).join(' '))}</p>
         ${nv ? `<p class="muted small">No-vig win chance: ${E.esc(a.short)} ${E.pct(nv.a)} · ${E.esc(b.short)} ${E.pct(nv.b)} · book's cut ${E.pct(nv.hold)}</p>` : ''}
         <p class="muted small">Check weigh-in results Friday. A missed weight or a late replacement changes everything.</p></div>
+        ${a.books || b.books ? `<div class="sh-sec"><div class="card-label">DraftKings vs FanDuel</div><table class="otbl bktbl"><thead><tr><th>Fighter</th><th class="r">DraftKings</th><th class="r">FanDuel</th></tr></thead><tbody>${[a, b].map((x) => { const m = { DraftKings: x.books && x.books.DraftKings != null ? { odds: x.books.DraftKings } : null, FanDuel: x.books && x.books.FanDuel != null ? { odds: x.books.FanDuel } : null }; const bb = bestBook(m.DraftKings, m.FanDuel, 'ml'); return `<tr><td>${E.esc(x.name)}${bb ? ` <span class="bp">Best: ${bb === 'DraftKings' ? 'DK' : 'FD'}</span>` : ''}</td><td class="r">${bookCell(m, 'ml', 'DraftKings')}</td><td class="r">${bookCell(m, 'ml', 'FanDuel')}</td></tr>`; }).join('')}</tbody></table><p class="muted small">Prices via The Odds API. Confirm in the app before betting.</p></div>` : ''}
+        <div class="sh-sec"><div class="card-label">Line movement</div><div id="shHist"><p class="muted small">Loading…</p></div></div>
         <div class="sh-sec"><div class="card-label">Research this fight</div>${links(SITES.UFC(f))}</div>`;
     }
     $('sheetBody').innerHTML = html;
+    if (it.type === 'fb') fillHistory(it.g.id, 'fb', [it.g.home.abbr || it.g.home.short]); else fillHistory('ufc-' + it.f.id, 'ufc', it.f.fighters.map((x) => x.short || x.name));
     const sh = $('sheet'); sh.hidden = false; sh.setAttribute('aria-hidden', 'false'); document.body.classList.add('no-scroll');
     requestAnimationFrame(() => sh.classList.add('open'));
     sh.querySelector('.sheet-panel').scrollTop = 0;
@@ -194,19 +316,22 @@
     const get = (f) => fetch('data/' + f + '?t=' + Math.floor(Date.now() / 6e5), { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
     [games, inj, meta] = await Promise.all([get('games.json'), get('injuries.json'), get('meta.json')]);
     if (meta && meta.updated) $('slateUpdated').textContent = 'Updated ' + E.fmtET(meta.updated);
-    render(); renderHome(); renderInjuries(true);
+    render(); renderHome(); renderInjuries(true); counts();
     window.EdgeData = { games, inj, meta };
     document.dispatchEvent(new Event('edge:data'));
   }
   function renderHome() {
+    renderValue();
     const hs = $('homeSlate'); if (!hs || !games) return;
     const up = [];
     ['nfl', 'cfb'].forEach((k) => (games[k] && games[k].games || []).forEach((g) => { if (g.status.state === 'pre') { up.push({ g, k }); index[g.id] = { type: 'fb', g, key: k }; } }));
     up.sort((a, b) => new Date(a.g.start) - new Date(b.g.start));
-    const nfl = up.filter((x) => x.k === 'nfl').slice(0, 2), cfb = up.filter((x) => x.k === 'cfb' && (x.g.home.rank || x.g.away.rank)).slice(0, 2);
+    const sk = sportKey(), n = sk === 'all' ? 2 : 4;
+    const nfl = sk === 'all' || sk === 'nfl' ? up.filter((x) => x.k === 'nfl').slice(0, n) : [];
+    const cfb = sk === 'all' || sk === 'cfb' ? up.filter((x) => x.k === 'cfb' && (sk === 'cfb' || x.g.home.rank || x.g.away.rank)).slice(0, n) : [];
     let html = [...nfl, ...cfb].map((x) => footballCard(x.g, x.k)).join('');
-    const ev = games.ufc && games.ufc.events[0]; const main = ev && ev.fights.find((f) => f.status.state === 'pre');
-    if (main) { index[ev.id + ':' + main.id] = { type: 'ufc', ev, f: main }; html += fightCard(ev, main, ev.fights.indexOf(main)); }
+    const ev = games.ufc && games.ufc.events[0];
+    if (ev && (sk === 'all' || sk === 'ufc')) ev.fights.filter((f) => f.status.state === 'pre').slice(0, sk === 'ufc' ? 4 : 1).forEach((f) => { index[ev.id + ':' + f.id] = { type: 'ufc', ev, f }; html += fightCard(ev, f, ev.fights.indexOf(f)); });
     hs.innerHTML = html || '<div class="empty">No upcoming games in the feed.</div>';
     const fg = $('freshGrid');
     if (fg) {
@@ -233,16 +358,47 @@
     }).join('');
     list.innerHTML = html || `<div class="empty">${teams.length ? 'Nobody matches this filter.' : 'No injury data from ESPN for this league right now.'}</div>`;
   }
+  // ---------- Sport selector (left rail / sticky bar) ----------
+  const SK = { all: 'all', nfl: 'nfl', cfb: 'cfb', college: 'cfb', ufc: 'ufc' };
+  const SPORT = { all: 'all', nfl: 'NFL', cfb: 'College Football', ufc: 'UFC' };
+  const LS_KEY = 'edge.sport';
+  const sportKey = () => Object.keys(SPORT).find((k) => SPORT[k] === sport) || 'all';
+  function setSport(k, scroll) {
+    sport = SPORT[k] || 'all';
+    try { localStorage.setItem(LS_KEY, k); } catch (e) {}
+    document.querySelectorAll('#sportNav .sn').forEach((a) => { const on = a.dataset.sk === k; a.classList.toggle('active', on); a.toggleAttribute('aria-current', on); });
+    if ((k === 'nfl' || k === 'cfb') && typeof injSport !== 'undefined' && injSport !== k) { const ic = document.querySelector('#injSport .chip[data-s="' + k + '"]'); if (ic) ic.click(); }
+    if (games) { render(); renderHome(); }
+    window.EdgeSport = k; document.dispatchEvent(new CustomEvent('edge:sport', { detail: k }));
+    if (scroll) setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 40);
+  }
+  function counts() {
+    if (!games) return;
+    const live = (g) => !upcoming || g.status.state !== 'post';
+    const c = { nfl: ((games.nfl && games.nfl.games) || []).filter(live).length, cfb: ((games.cfb && games.cfb.games) || []).filter(live).length,
+      ufc: ((games.ufc && games.ufc.events) || []).reduce((n, ev) => n + ev.fights.filter(live).length, 0) };
+    c.all = c.nfl + c.cfb + c.ufc;
+    document.querySelectorAll('#sportNav .sn-c').forEach((el) => { el.textContent = c[el.dataset.c]; });
+  }
+  function initSportNav() {
+    const nav = $('sportNav'); if (!nav) return;
+    let saved = null; try { saved = localStorage.getItem(LS_KEY); } catch (e) {}
+    const k = SK[location.hash.slice(1)] || SK[saved] || 'all';
+    setSport(k, false);
+    nav.addEventListener('click', (e) => { const a = e.target.closest('.sn'); if (a && location.hash === '#' + a.dataset.sk) { e.preventDefault(); setSport(a.dataset.sk, true); } });
+    const tb = document.querySelector('.topbar');
+    const sync = () => document.documentElement.style.setProperty('--tb-h', tb.offsetHeight + 'px');
+    if (tb) { sync(); if (window.ResizeObserver) new ResizeObserver(sync).observe(tb); else window.addEventListener('resize', sync); }
+  }
   function init() {
     E = window.Edge; if (!E) return;
     $('slateFilters').addEventListener('click', (e) => {
       const c = e.target.closest('.chip'); if (!c) return;
       if (c.id === 'slateUpcoming') { upcoming = !upcoming; c.classList.toggle('active', upcoming); c.setAttribute('aria-pressed', upcoming); }
-      else { sport = c.dataset.sport; $('slateFilters').querySelectorAll('.chip[data-sport]').forEach((x) => x.classList.toggle('active', x === c)); }
-      render();
+      render(); counts();
     });
     $('slateUpcoming').classList.add('active');
-    ['slateList', 'homeSlate'].forEach((id) => $(id) && $(id).addEventListener('click', (e) => { const g = e.target.closest('.game'); if (g) openSheet(g.dataset.key); }));
+    ['slateList', 'homeSlate', 'valueBoard'].forEach((id) => $(id) && $(id).addEventListener('click', (e) => { const g = e.target.closest('.game,.vb-row'); if (g) openSheet(g.dataset.key); }));
     $('injSport').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (!c) return; injSport = c.dataset.s; $('injSport').querySelectorAll('.chip').forEach((x) => x.classList.toggle('active', x === c)); renderInjuries(true); });
     $('injTeam').addEventListener('change', () => renderInjuries(false)); $('injStatus').addEventListener('change', () => renderInjuries(false));
     $('sheet').addEventListener('click', (e) => {
@@ -250,7 +406,8 @@
       const b = e.target.closest('[data-shop]'); if (b) { try { shop(JSON.parse(b.dataset.shop)); } catch (err) {} }
     });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('sheet').hidden) closeSheet(); });
-    window.addEventListener('hashchange', () => { if (!$('sheet').hidden) closeSheet(); });
+    window.addEventListener('hashchange', () => { if (!$('sheet').hidden) closeSheet(); const k = SK[location.hash.slice(1)]; if (k) setSport(k, true); });
+    initSportNav();
     load();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
