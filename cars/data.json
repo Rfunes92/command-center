@@ -1,0 +1,45 @@
+{
+  "updated": "2026-10-24",
+  "updatedLabel": "Oct 24, 2026",
+  "source": "Sunny's board",
+  "priceRule": "Facebook price = website price + $2,000",
+  "stages": [
+    { "id": "draft",   "label": "Draft",   "hint": "Built, waiting to post" },
+    { "id": "queue",   "label": "Queue",   "hint": "Next up to build" },
+    { "id": "listed",  "label": "Listed",  "hint": "Live on Marketplace" },
+    { "id": "sold",    "label": "Sold",    "hint": "Off the lot" },
+    { "id": "skipped", "label": "Skipped", "hint": "Not for Marketplace" }
+  ],
+  "vehicles": [
+    { "stock": "022948", "year": 2020, "make": "Lexus", "model": "RX 350L", "trim": "Base", "title": "clean", "miles": 45478, "site": 34994, "fb": 36994, "stage": "draft", "cotd": true, "note": "Car of the Day pick, waiting on Ronnie's Post it", "photo": "https://static.overfuel.com/photos/1217/2145848/WAYSREFO0NEZXQRFHV8Y.webp" },
+    { "stock": "539001", "year": 2025, "make": "Chrysler", "model": "Pacifica", "trim": "Select", "title": "clean", "miles": 65208, "site": 20994, "fb": 22994, "stage": "draft", "photo": "https://static.overfuel.com/photos/1217/2145846/YX8UTUEF0GXNVSTDM9HZ.webp" },
+    { "stock": "007710", "year": 2019, "make": "Acura", "model": "ILX", "trim": "Premium Package", "title": "clean", "miles": 64982, "site": 18994, "fb": 20994, "stage": "queue", "photo": "https://static.overfuel.com/photos/1217/2062993/XFTNHVU8G5NMIIKJXRFG.webp" },
+    { "stock": "K30291", "year": 2018, "make": "BMW", "model": "X1", "trim": "xDrive28i", "title": null, "miles": 42955, "site": 16994, "fb": 18994, "stage": "queue", "note": "Was marked sold, back on site, not relisted yet", "photo": "https://static.overfuel.com/photos/1217/2072174/BTTD9YIVXEV1X39ZUPVW.webp" },
+    { "stock": "258400", "year": 2025, "make": "Toyota", "model": "Sienna", "trim": "LE", "title": "clean", "miles": 15494, "site": 61994, "fb": null, "stage": "skipped", "note": "Wheelchair-accessible conversion, never on Marketplace", "photo": "https://static.overfuel.com/photos/1217/2145847/PVPEE7NAGTGWDH8COU4Z.webp" },
+    { "stock": "A12696", "year": 2023, "make": "Ford", "model": "Transit 250", "trim": "Medium Roof", "title": "rebuilt", "stage": "sold", "soldOn": "Oct 24", "photo": "https://static.overfuel.com/photos/1217/1966494/YETQUPVRPFBDLGJMXNWQ.webp" },
+    { "stock": "A69013", "year": 2021, "make": "Ford", "model": "Transit 350 HD", "trim": "Cutaway Box Truck", "title": "rebuilt", "stage": "sold", "soldOn": "Oct 24", "photo": "https://static.overfuel.com/photos/1217/1956755/XNPJDGMK3ENXTBDU3EKA.webp" },
+    { "stock": "125906", "year": 2019, "make": "Audi", "model": "Q5", "trim": "45 Premium", "title": "clean", "stage": "sold", "soldOn": "Oct 24", "photo": "https://static.overfuel.com/photos/1217/1911663/P7GPWQJYN0T1ROKJSD91.webp" },
+    { "stock": "319134", "year": 2024, "make": "Hyundai", "model": "Tucson", "trim": "SEL", "title": "clean", "stage": "sold", "soldOn": "Oct 24", "photo": "https://static.overfuel.com/photos/1217/1922000/VHL9B9IENUDUACNRYQDX.webp" }
+  ],
+  "workstreams": [
+    { "name": "Facebook Marketplace listings", "owner": "Sunny", "pct": 68, "status": "active", "note": "Drafts built, posting with Ronnie" },
+    { "name": "Car of the Day", "owner": "Sunny", "pct": 80, "status": "active", "note": "Today: 2020 Lexus RX 350L" },
+    { "name": "Price Watch (site + $2,000)", "owner": "Sunny", "pct": 90, "status": "active", "note": "35 listings off the rule" },
+    { "name": "Morning inventory check", "owner": "Sunny", "pct": 75, "status": "active", "note": "Daily at 8:48 AM" },
+    { "name": "Nightly sold sweep", "owner": "Sunny", "pct": 85, "status": "active", "note": "Daily at 9:00 PM" },
+    { "name": "RevvedupRon pre-approval funnel", "owner": "Sunny + Grok", "pct": 45, "status": "blocked", "note": "Waiting on A2P brand decision" },
+    { "name": "Sold customer export", "owner": "Sunny", "pct": 42, "status": "paused", "note": "4 sold today; needs Google + VinSolutions sign-in" },
+    { "name": "Work computer (desk2) tune-up", "owner": "Ronnie", "pct": 30, "status": "blocked", "note": "Waiting on Ronnie" }
+  ],
+  "needs": [
+    { "title": "Post today's Car of the Day", "detail": "2020 Lexus RX 350L (022948), FB $36,994. Draft is ready.", "tag": "Post", "priority": "high" },
+    { "title": "A2P brand decision", "detail": "Unblocks the RevvedupRon pre-approval funnel.", "tag": "Decide", "priority": "high" },
+    { "title": "Google sign-in for the sales sheet", "detail": "Needed before the sold export can run.", "tag": "Sign-in", "priority": "high" },
+    { "title": "Cadillac XT5 draft has no photos", "detail": "Stock 176377. Draft can't post with zero photos.", "tag": "Photos", "priority": "med" },
+    { "title": "Transit drafts stuck on the uploader", "detail": "Stock A02124 and A06098.", "tag": "Fix", "priority": "med" },
+    { "title": "35 listings off the price rule", "detail": "Includes the 2022 Transit 350 box truck: $40,994 → $39,994.", "tag": "Prices", "priority": "med" },
+    { "title": "Clean or rebuilt title?", "detail": "2026 Transit 350 A28914 ($45,994) and A06098 ($46,994).", "tag": "Decide", "priority": "med" },
+    { "title": "Credit-challenged noon posts", "detail": "Stopped since Oct 19. 2 creatives waiting for approval.", "tag": "Approve", "priority": "med" },
+    { "title": "Finish second Car of the Day", "detail": "BMW X3 is unfinished.", "tag": "Finish", "priority": "low" }
+  ]
+}
